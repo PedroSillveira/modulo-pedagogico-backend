@@ -436,7 +436,7 @@
         let perguntasData = [];
         let respostas = {};
 
-        // Função para fazer requisições
+        // FUNÇÃO CORRIGIDA para fazer requisições públicas
         async function apiRequest(endpoint, data = null, method = 'GET') {
             try {
                 let url = `${API_BASE}${endpoint}`;
@@ -448,7 +448,10 @@
                 };
 
                 if (data && method === 'POST') {
-                    options.body = JSON.stringify(data);
+                    // CORREÇÃO: Para rotas públicas, enviar dados simples
+                    options.body = JSON.stringify({
+                        payload: data
+                    });
                 }
 
                 const response = await fetch(url, options);
@@ -520,12 +523,14 @@
                 document.getElementById('errorContainer').classList.add('hidden');
                 document.getElementById('formularioContainer').classList.add('hidden');
 
-                // Carregar dados do formulário
+                console.log('Carregando formulário ID:', formularioId);
+
+                // CORREÇÃO: Carregar dados do formulário com a nova estrutura
                 const data = await apiRequest('/public/buscar_formulario', {
-                    payload: {
-                        formulario_id: formularioId
-                    }
+                    formulario_id: parseInt(formularioId)
                 }, 'POST');
+
+                console.log('Dados recebidos:', data);
 
                 formularioData = data.formulario;
                 perguntasData = data.perguntas;
@@ -701,10 +706,8 @@
         async function verificarSeJaRespondeu(email) {
             try {
                 const resultado = await apiRequest('/public/verificar_participacao', {
-                    payload: {
-                        email: email,
-                        formulario_id: formularioId
-                    }
+                    email: email,
+                    formulario_id: parseInt(formularioId)
                 }, 'POST');
 
                 return resultado.ja_respondeu;
@@ -714,70 +717,104 @@
             }
         }
 
-        // Submeter formulário
+        // Submeter formulário - VERSÃO CORRIGIDA
         document.getElementById('respostaForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            console.log('=== INICIANDO ENVIO DO FORMULÁRIO ===');
+            
             const nome = document.getElementById('nomeParticipante').value.trim();
             const email = document.getElementById('emailParticipante').value.trim();
+            
+            console.log('Nome:', nome);
+            console.log('Email:', email);
             
             if (!nome || !email) {
                 alert('Por favor, preencha seu nome e email!');
                 return;
             }
 
-            // Verificar se já respondeu
-            const jaRespondeu = await verificarSeJaRespondeu(email);
-            if (jaRespondeu) {
-                document.getElementById('jaRespondeuAviso').classList.remove('hidden');
-                document.getElementById('respostaForm').classList.add('hidden');
-                return;
-            }
-
-            // Coletar respostas
-            const respostasArray = [];
-            
-            perguntasData.forEach(pergunta => {
-                let resposta = respostas[pergunta.id];
-                
-                if (!resposta) {
-                    const elemento = document.getElementById(`pergunta-${pergunta.id}`);
-                    if (elemento) {
-                        resposta = elemento.value;
-                    }
-                }
-                
-                if (pergunta.obrigatoria && (!resposta || resposta.trim() === '')) {
-                    throw new Error(`Por favor, responda a pergunta: ${pergunta.titulo}`);
-                }
-                
-                if (resposta) {
-                    respostasArray.push({
-                        pergunta_id: pergunta.id,
-                        resposta: resposta
-                    });
-                }
-            });
-
-            if (respostasArray.length === 0) {
-                alert('Por favor, responda pelo menos uma pergunta!');
-                return;
-            }
-
-            // Desabilitar botão
-            const btnEnviar = document.getElementById('btnEnviar');
-            btnEnviar.disabled = true;
-            btnEnviar.textContent = '⏳ Enviando...';
-
             try {
-                const resultado = await apiRequest('/public/responder', {
-                    payload: {
-                        formulario_id: formularioId,
-                        nome: nome,
-                        email: email,
-                        respostas: respostasArray
+                // Verificar se já respondeu
+                console.log('Verificando se já respondeu...');
+                const jaRespondeu = await verificarSeJaRespondeu(email);
+                if (jaRespondeu) {
+                    document.getElementById('jaRespondeuAviso').classList.remove('hidden');
+                    document.getElementById('respostaForm').classList.add('hidden');
+                    return;
+                }
+
+                // Coletar respostas - VERSÃO CORRIGIDA
+                console.log('Coletando respostas...');
+                const respostasArray = [];
+                const perguntasNaoRespondidas = [];
+                
+                perguntasData.forEach(pergunta => {
+                    console.log(`Processando pergunta ${pergunta.id}: ${pergunta.titulo}`);
+                    
+                    let resposta = respostas[pergunta.id];
+                    
+                    if (!resposta && resposta !== 0) { // 0 é uma resposta válida
+                        const elemento = document.getElementById(`pergunta-${pergunta.id}`);
+                        if (elemento) {
+                            resposta = elemento.value;
+                        }
                     }
-                }, 'POST');
+                    
+                    console.log(`Resposta da pergunta ${pergunta.id}:`, resposta, typeof resposta);
+                    
+                    // Função auxiliar para verificar se resposta está vazia
+                    function respostaVazia(valor) {
+                        if (valor === null || valor === undefined) return true;
+                        if (typeof valor === 'string') return valor.trim() === '';
+                        if (typeof valor === 'number') return false; // números são sempre válidos
+                        return !valor; // para outros tipos
+                    }
+                    
+                    // Verificar se é obrigatória e não foi respondida
+                    if (pergunta.obrigatoria && respostaVazia(resposta)) {
+                        perguntasNaoRespondidas.push(pergunta.titulo);
+                    } else if (!respostaVazia(resposta)) {
+                        respostasArray.push({
+                            pergunta_id: pergunta.id,
+                            resposta: String(resposta) // Converter para string para salvar no banco
+                        });
+                    }
+                });
+
+                console.log('Respostas coletadas:', respostasArray);
+                console.log('Perguntas não respondidas:', perguntasNaoRespondidas);
+
+                // Verificar perguntas obrigatórias não respondidas
+                if (perguntasNaoRespondidas.length > 0) {
+                    alert(`Por favor, responda as seguintes perguntas obrigatórias:\n\n${perguntasNaoRespondidas.join('\n')}`);
+                    return;
+                }
+
+                if (respostasArray.length === 0) {
+                    alert('Por favor, responda pelo menos uma pergunta!');
+                    return;
+                }
+
+                // Desabilitar botão
+                const btnEnviar = document.getElementById('btnEnviar');
+                btnEnviar.disabled = true;
+                btnEnviar.textContent = '⏳ Enviando...';
+
+                console.log('Enviando para o servidor...');
+
+                const dadosEnvio = {
+                    formulario_id: parseInt(formularioId),
+                    nome: nome,
+                    email: email,
+                    respostas: respostasArray
+                };
+
+                console.log('Dados que serão enviados:', dadosEnvio);
+
+                const resultado = await apiRequest('/public/responder', dadosEnvio, 'POST');
+
+                console.log('Resultado recebido:', resultado);
 
                 // Mostrar sucesso
                 document.getElementById('formularioContainer').classList.add('hidden');
@@ -787,8 +824,14 @@
                     Você ganhou <strong>${resultado.pontos_ganhos} pontos</strong>! 🎉
                 `;
 
+                console.log('=== FORMULÁRIO ENVIADO COM SUCESSO ===');
+
             } catch (error) {
+                console.error('Erro ao enviar formulário:', error);
                 alert('Erro ao enviar formulário: ' + error.message);
+                
+                // Reabilitar botão
+                const btnEnviar = document.getElementById('btnEnviar');
                 btnEnviar.disabled = false;
                 btnEnviar.textContent = '🚀 Enviar Respostas';
             }
@@ -798,4 +841,4 @@
         carregarFormulario();
     </script>
 </body>
-</html>
+</html> 

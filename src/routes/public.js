@@ -1,5 +1,5 @@
 // ==========================================
-// ROTAS PUBLIC - ÁREA PÚBLICA DOS FORMULÁRIOS
+// ROTAS PUBLIC - ÁREA PÚBLICA DOS FORMULÁRIOS (CORRIGIDO)
 // ==========================================
 
 const express = require('express');
@@ -51,20 +51,33 @@ rota.get('/formularios', async (req, res) => {
 
 rota.post('/buscar_formulario', async (req, res) => {
     try {
+        // CORREÇÃO: Acessar dados diretamente do payload, sem decodificar JWT
         const payload = req.body;
-        const data = security.jwtdecript(payload);
         
-        if (!data.formulario_id) {
+        console.log('=== DEBUG ROTA PÚBLICA ===');
+        console.log('Payload recebido:', JSON.stringify(payload, null, 2));
+        console.log('========================');
+        
+        // Extrair formulario_id do payload
+        let formulario_id;
+        
+        if (payload.payload && payload.payload.formulario_id) {
+            formulario_id = payload.payload.formulario_id;
+        } else if (payload.formulario_id) {
+            formulario_id = payload.formulario_id;
+        }
+        
+        if (!formulario_id) {
             return res.json(jsonMount(false, {}, 'ID do formulário é obrigatório!'));
         }
         
-        const formulario = await execute.execute_get_formulario_publico(data.formulario_id);
+        const formulario = await execute.execute_get_formulario_publico(formulario_id);
         
         if (formulario.length === 0) {
             return res.json(jsonMount(false, {}, 'Formulário não encontrado ou indisponível!'));
         }
         
-        const perguntas = await execute.execute_listar_perguntas_formulario(data.formulario_id);
+        const perguntas = await execute.execute_listar_perguntas_formulario(formulario_id);
         
         return res.json(jsonMount(true, {
             formulario: formulario[0],
@@ -79,20 +92,30 @@ rota.post('/buscar_formulario', async (req, res) => {
 
 rota.post('/verificar_participacao', async (req, res) => {
     try {
+        // CORREÇÃO: Acessar dados diretamente do payload
         const payload = req.body;
-        const data = security.jwtdecript(payload);
         
-        if (!data.email || !data.formulario_id) {
+        let email, formulario_id;
+        
+        if (payload.payload) {
+            email = payload.payload.email;
+            formulario_id = payload.payload.formulario_id;
+        } else {
+            email = payload.email;
+            formulario_id = payload.formulario_id;
+        }
+        
+        if (!email || !formulario_id) {
             return res.json(jsonMount(false, {}, 'Email e formulário são obrigatórios!'));
         }
         
-        const participante = await execute.execute_buscar_participante_por_email(data.email);
+        const participante = await execute.execute_buscar_participante_por_email(email);
         
         if (participante.length === 0) {
             return res.json(jsonMount(true, { ja_respondeu: false }, 'Pode responder!'));
         }
         
-        const jaRespondeu = await execute.execute_verificar_ja_respondeu(data.formulario_id, participante[0].id);
+        const jaRespondeu = await execute.execute_verificar_ja_respondeu(formulario_id, participante[0].id);
         
         return res.json(jsonMount(true, { 
             ja_respondeu: jaRespondeu.length > 0 
@@ -106,8 +129,15 @@ rota.post('/verificar_participacao', async (req, res) => {
 
 rota.post('/responder', async (req, res) => {
     try {
+        // CORREÇÃO: Acessar dados diretamente do payload
         const payload = req.body;
-        const data = security.jwtdecript(payload);
+        
+        let data;
+        if (payload.payload) {
+            data = payload.payload;
+        } else {
+            data = payload;
+        }
         
         if (!data.formulario_id || !data.nome || !data.email || !data.respostas) {
             return res.json(jsonMount(false, {}, 'Dados incompletos!'));
@@ -189,21 +219,28 @@ rota.get('/ranking', async (req, res) => {
 
 rota.post('/buscar_imperador', async (req, res) => {
     try {
+        // CORREÇÃO: Acessar dados diretamente do payload
         const payload = req.body;
-        const data = security.jwtdecript(payload);
         
-        if (!data.email) {
+        let email;
+        if (payload.payload) {
+            email = payload.payload.email;
+        } else {
+            email = payload.email;
+        }
+        
+        if (!email) {
             return res.json(jsonMount(false, {}, 'Email é obrigatório!'));
         }
         
-        const participante = await execute.execute_buscar_participante_por_email(data.email);
+        const participante = await execute.execute_buscar_participante_por_email(email);
         
         if (participante.length === 0) {
             return res.json(jsonMount(false, {}, 'Imperador não encontrado!'));
         }
         
         const ranking = await execute.execute_get_ranking_global();
-        const posicao = ranking.findIndex(p => p.email === data.email) + 1;
+        const posicao = ranking.findIndex(p => p.email === email) + 1;
         
         return res.json(jsonMount(true, {
             ...participante[0],
