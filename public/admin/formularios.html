@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -58,7 +59,7 @@
             background: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
@@ -119,7 +120,7 @@
         .formularios-table {
             background: white;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
@@ -128,7 +129,8 @@
             border-collapse: collapse;
         }
 
-        th, td {
+        th,
+        td {
             padding: 15px;
             text-align: left;
             border-bottom: 1px solid #dee2e6;
@@ -205,22 +207,23 @@
             .container {
                 padding: 10px;
             }
-            
+
             .page-header {
                 flex-direction: column;
                 gap: 15px;
             }
-            
+
             table {
                 font-size: 14px;
             }
-            
+
             .actions {
                 flex-direction: column;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <h1>Sistema Pedagógico</h1>
@@ -264,11 +267,11 @@
     <script>
         // Configurações
         const API_BASE = 'http://localhost:4444';
-        
+
         // Verificar autenticação
         const token = localStorage.getItem('pedagogico_token');
         const user = JSON.parse(localStorage.getItem('pedagogico_user') || '{}');
-        
+
         if (!token) {
             window.location.href = 'login.html';
         }
@@ -284,38 +287,87 @@
         }
 
         // Função para fazer requisições autenticadas
+        // async function apiRequest(endpoint, data = {}) {
+        //     try {
+        //         const payload = {
+        //             payload: {
+        //                 ...data,
+        //                 usuario_id: user.id
+        //             }
+        //         };
+
+        //         const response = await fetch(`${API_BASE}${endpoint}`, {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //             },
+        //             body: JSON.stringify(payload)
+        //         });
+
+        //         const result = await response.json();
+
+        //         if (result.payload) {
+        //             const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
+
+        //             if (!decodedResponse.boleano) {
+        //                 if (decodedResponse.mensagem.includes('Token inválido')) {
+        //                     logout();
+        //                 }
+        //                 throw new Error(decodedResponse.mensagem);
+        //             }
+
+        //             return decodedResponse.obj;
+        //         }
+
+        //         throw new Error('Resposta inválida do servidor');
+        //     } catch (error) {
+        //         console.error('Erro na API:', error);
+        //         throw error;
+        //     }
+        // }
         async function apiRequest(endpoint, data = {}) {
             try {
+                const token = localStorage.getItem('pedagogico_token');
+                if (!token) {
+                    logout();
+                    return;
+                }
+
+                // FORMATO ESPERADO PELO BACKEND: payload com token + dados
                 const payload = {
-                    payload: {
-                        ...data,
-                        usuario_id: user.id
-                    }
+                    payload: token,
+                    ...data  // Adicionar dados diretamente no nível raiz
                 };
+
+                console.log('=== DEBUG FRONTEND ===');
+                console.log('Endpoint:', endpoint);
+                console.log('Dados enviados:', data);
+                console.log('Payload final:', payload);
+                console.log('=====================');
 
                 const response = await fetch(`${API_BASE}${endpoint}`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json; charset=utf-8',
                     },
                     body: JSON.stringify(payload)
                 });
 
                 const result = await response.json();
-                
+
                 if (result.payload) {
                     const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
-                    
+
                     if (!decodedResponse.boleano) {
                         if (decodedResponse.mensagem.includes('Token inválido')) {
                             logout();
                         }
                         throw new Error(decodedResponse.mensagem);
                     }
-                    
+
                     return decodedResponse.obj;
                 }
-                
+
                 throw new Error('Resposta inválida do servidor');
             } catch (error) {
                 console.error('Erro na API:', error);
@@ -326,7 +378,7 @@
         // Função para formatar data
         function formatarData(dataString) {
             const data = new Date(dataString);
-            return data.toLocaleDateString('pt-BR') + ' ' + data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+            return data.toLocaleDateString('pt-BR') + ' ' + data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
         }
 
         // Função para ativar formulário
@@ -377,10 +429,10 @@
         // Função para carregar formulários
         async function carregarFormularios() {
             const tbody = document.getElementById('formulariosTableBody');
-            
+
             try {
                 const formularios = await apiRequest('/pedagogico/listar_formularios');
-                
+
                 if (formularios && formularios.length > 0) {
                     tbody.innerHTML = formularios.map(form => `
                         <tr>
@@ -402,10 +454,10 @@
                             <td>
                                 <div class="actions">
                                     <a href="editar-formulario.html?id=${form.id}" class="btn btn-sm">Editar</a>
-                                    ${form.ativo ? 
-                                        `<button class="btn btn-warning btn-sm" onclick="desativarFormulario(${form.id})">Desativar</button>` :
-                                        `<button class="btn btn-success btn-sm" onclick="ativarFormulario(${form.id})">Ativar</button>`
-                                    }
+                                    ${form.ativo ?
+                            `<button class="btn btn-warning btn-sm" onclick="desativarFormulario(${form.id})">Desativar</button>` :
+                            `<button class="btn btn-success btn-sm" onclick="ativarFormulario(${form.id})">Ativar</button>`
+                        }
                                     <button class="btn btn-danger btn-sm" onclick="deletarFormulario(${form.id}, '${form.titulo}')">Deletar</button>
                                 </div>
                             </td>
@@ -438,4 +490,5 @@
         carregarFormularios();
     </script>
 </body>
+
 </html>
