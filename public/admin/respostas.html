@@ -120,6 +120,23 @@
             background: #138496;
         }
 
+        .status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status.ativo {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.inativo {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
         .respostas-table {
             background: white;
             border-radius: 8px;
@@ -147,6 +164,7 @@
 
         tr:hover {
             background: #f8f9fa;
+            cursor: pointer;
         }
 
         .loading {
@@ -161,6 +179,7 @@
             padding: 15px;
             border-radius: 4px;
             margin: 10px 0;
+            text-align: center;
         }
 
         .empty {
@@ -391,56 +410,7 @@
             window.location.href = 'login.html';
         }
 
-        // async function apiRequest(endpoint, data = {}) {
-        //     try {
-        //         const token = localStorage.getItem('pedagogico_token');
-        //         if (!token) {
-        //             logout();
-        //             return;
-        //         }
-
-        //         // MESMA ESTRUTURA DA PÁGINA DE CRIAR FORMULÁRIO
-        //         const payload = {
-        //             payload: token,
-        //             ...data  // Incluir dados (formulario_id, etc.) no nível raiz
-        //         };
-
-        //         console.log('=== DEBUG FRONTEND ===');
-        //         console.log('Endpoint:', endpoint);
-        //         console.log('Dados enviados:', data);
-        //         console.log('Payload final:', payload);
-        //         console.log('=====================');
-
-        //         const response = await fetch(`${API_BASE}${endpoint}`, {
-        //             method: 'POST',
-        //             headers: {
-        //                 'Content-Type': 'application/json; charset=utf-8',
-        //             },
-        //             body: JSON.stringify(payload)
-        //         });
-
-        //         const result = await response.json();
-
-        //         if (result.payload) {
-        //             const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
-
-        //             if (!decodedResponse.boleano) {
-        //                 if (decodedResponse.mensagem.includes('Token inválido')) {
-        //                     logout();
-        //                 }
-        //                 throw new Error(decodedResponse.mensagem);
-        //             }
-
-        //             return decodedResponse.obj;
-        //         }
-
-        //         throw new Error('Resposta inválida do servidor');
-        //     } catch (error) {
-        //         console.error('Erro na API:', error);
-        //         throw error;
-        //     }
-        // }
-
+        // Função API corrigida
         async function apiRequest(endpoint, data = {}) {
             try {
                 const token = localStorage.getItem('pedagogico_token');
@@ -491,6 +461,52 @@
             return data.toLocaleDateString('pt-BR') + ' às ' + data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
         }
 
+        // Função para atualizar estatísticas
+        function atualizarEstatisticas(total, media, maior, menor) {
+            const elementos = {
+                'totalRespostas': total,
+                'pontuacaoMedia': media,
+                'maiorPontuacao': maior,
+                'menorPontuacao': menor
+            };
+
+            for (const [id, value] of Object.entries(elementos)) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value;
+                }
+            }
+        }
+
+        // Função para mostrar loading
+        function showLoading(elementId, text = 'Carregando...') {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="loading">${text}</td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Função para mostrar erro
+        function showError(elementId, text, retryFunction = null) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                let errorHTML = `
+                    <tr>
+                        <td colspan="5" class="error">
+                            ${text}
+                `;
+                if (retryFunction) {
+                    errorHTML += `<br><button class="btn" onclick="${retryFunction.name}()" style="margin-top: 10px;">🔄 Tentar Novamente</button>`;
+                }
+                errorHTML += '</td></tr>';
+                element.innerHTML = errorHTML;
+            }
+        }
+
         // Carregar informações do formulário (se específico)
         async function carregarInfoFormulario() {
             if (!formularioId) return;
@@ -504,53 +520,75 @@
                 document.getElementById('formularioDescricao').textContent = data.formulario.descricao || 'Sem descrição';
                 document.getElementById('formularioInfo').style.display = 'block';
 
+                // Adicionar link para voltar à seleção de formulários
+                const navLinks = document.querySelector('.nav-links');
+                if (navLinks && !navLinks.querySelector('.volta-selecao')) {
+                    const linkVolta = document.createElement('a');
+                    linkVolta.href = 'respostas.html';
+                    linkVolta.textContent = '📊 Selecionar Outro Formulário';
+                    linkVolta.className = 'volta-selecao';
+                    linkVolta.style.marginLeft = '10px';
+                    navLinks.appendChild(linkVolta);
+                }
+
+                // Atualizar título da página
+                document.querySelector('.page-header h2').textContent = `📊 Respostas: ${data.formulario.titulo}`;
+
             } catch (error) {
                 console.error('Erro ao carregar informações do formulário:', error);
             }
         }
 
-        // Carregar respostas
-        async function carregarRespostas() {
+        // Carregar lista de formulários para seleção
+        async function carregarListaFormularios() {
             const tbody = document.getElementById('respostasTableBody');
+            if (!tbody) return;
 
             try {
-                let respostas;
+                showLoading('respostasTableBody', 'Carregando formulários...');
+                const formularios = await apiRequest('/pedagogico/listar_formularios');
 
-                if (formularioId) {
-                    // Carregar respostas de um formulário específico
-                    respostas = await apiRequest('/pedagogico/respostas_formulario', {
-                        formulario_id: formularioId
-                    });
-                } else {
-                    // Carregar todas as respostas (implementar endpoint se necessário)
-                    throw new Error('Visualização geral de respostas não implementada ainda');
-                }
+                if (formularios && formularios.length > 0) {
+                    // Atualizar cabeçalho da página
+                    document.querySelector('.page-header h2').textContent = '📊 Selecionar Formulário para Ver Respostas';
 
-                if (respostas && respostas.length > 0) {
-                    // Calcular estatísticas
-                    const pontuacoes = respostas.map(r => r.pontos_ganhos);
-                    const total = respostas.length;
-                    const media = Math.round(pontuacoes.reduce((a, b) => a + b, 0) / total);
-                    const maior = Math.max(...pontuacoes);
-                    const menor = Math.min(...pontuacoes);
+                    // Esconder estatísticas
+                    const statsRow = document.querySelector('.stats-row');
+                    if (statsRow) statsRow.style.display = 'none';
 
-                    // Atualizar estatísticas
-                    document.getElementById('totalRespostas').textContent = total;
-                    document.getElementById('pontuacaoMedia').textContent = media;
-                    document.getElementById('maiorPontuacao').textContent = maior;
-                    document.getElementById('menorPontuacao').textContent = menor;
+                    // Alterar cabeçalhos da tabela
+                    const thead = document.querySelector('thead tr');
+                    if (thead) {
+                        thead.innerHTML = `
+                            <th>Formulário</th>
+                            <th>Status</th>
+                            <th>Data Criação</th>
+                            <th>Total de Respostas</th>
+                            <th>Ações</th>
+                        `;
+                    }
 
-                    // Mostrar respostas na tabela
-                    tbody.innerHTML = respostas.map(resposta => `
+                    // Mostrar formulários na tabela
+                    tbody.innerHTML = formularios.map(form => `
                         <tr>
-                            <td><strong>${resposta.participante_nome}</strong></td>
-                            <td>${resposta.participante_email}</td>
-                            <td>${formatarData(resposta.data_resposta)}</td>
-                            <td class="pontuacao">${resposta.pontos_ganhos} pts</td>
                             <td>
-                                <button class="btn btn-info btn-sm" onclick="verDetalhes(${resposta.id})">
-                                    👁️ Ver Detalhes
-                                </button>
+                                <strong>${form.titulo}</strong>
+                                ${form.descricao ? `<br><small style="color: #666;">${form.descricao}</small>` : ''}
+                            </td>
+                            <td>
+                                <span class="status ${form.ativo ? 'ativo' : 'inativo'}">
+                                    ${form.ativo ? 'Ativo' : 'Inativo'}
+                                </span>
+                            </td>
+                            <td>${formatarData(form.data_criacao)}</td>
+                            <td>
+                                <strong>${form.total_respostas || 0}</strong> respostas
+                            </td>
+                            <td>
+                                ${form.total_respostas > 0 ?
+                                    `<a href="respostas.html?id=${form.id}" class="btn btn-info btn-sm">📊 Ver Respostas</a>` :
+                                    `<span style="color: #666; font-size: 12px;">Sem respostas</span>`
+                                }
                             </td>
                         </tr>
                     `).join('');
@@ -558,27 +596,69 @@
                     tbody.innerHTML = `
                         <tr>
                             <td colspan="5" class="empty">
-                                Nenhuma resposta encontrada.
+                                Nenhum formulário encontrado.<br>
+                                <a href="criar-formulario.html" class="btn" style="margin-top: 10px;">Criar Primeiro Formulário</a>
                             </td>
                         </tr>
                     `;
-
-                    // Zerar estatísticas
-                    document.getElementById('totalRespostas').textContent = '0';
-                    document.getElementById('pontuacaoMedia').textContent = '0';
-                    document.getElementById('maiorPontuacao').textContent = '0';
-                    document.getElementById('menorPontuacao').textContent = '0';
                 }
             } catch (error) {
-                console.error('Erro ao carregar respostas:', error);
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="error">
-                            Erro ao carregar respostas: ${error.message}
-                            <br><button class="btn" onclick="carregarRespostas()" style="margin-top: 10px;">Tentar Novamente</button>
-                        </td>
-                    </tr>
-                `;
+                showError('respostasTableBody', 'Erro ao carregar formulários: ' + error.message, () => carregarListaFormularios());
+            }
+        }
+
+        // Carregar respostas (principal)
+        async function carregarRespostas() {
+            const tbody = document.getElementById('respostasTableBody');
+            if (!tbody) return;
+
+            try {
+                if (formularioId) {
+                    // Carregar respostas de um formulário específico
+                    showLoading('respostasTableBody', 'Carregando respostas...');
+                    const respostas = await apiRequest('/pedagogico/respostas_formulario', {
+                        formulario_id: formularioId
+                    });
+
+                    if (respostas && respostas.length > 0) {
+                        // Calcular estatísticas
+                        const pontuacoes = respostas.map(r => r.pontos_ganhos);
+                        const total = respostas.length;
+                        const media = Math.round(pontuacoes.reduce((a, b) => a + b, 0) / total);
+                        const maior = Math.max(...pontuacoes);
+                        const menor = Math.min(...pontuacoes);
+
+                        // Atualizar estatísticas na tela
+                        atualizarEstatisticas(total, media, maior, menor);
+
+                        // Mostrar respostas na tabela
+                        tbody.innerHTML = respostas.map(resposta => `
+                            <tr>
+                                <td><strong>${resposta.participante_nome}</strong></td>
+                                <td>${resposta.participante_email}</td>
+                                <td>${formatarData(resposta.data_resposta)}</td>
+                                <td class="pontuacao">${resposta.pontos_ganhos} pts</td>
+                                <td>
+                                    <button class="btn btn-info btn-sm" onclick="verDetalhes(${resposta.id})">
+                                        👁️ Ver Detalhes
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="5" class="empty">Nenhuma resposta encontrada.</td>
+                            </tr>
+                        `;
+                        atualizarEstatisticas(0, 0, 0, 0);
+                    }
+                } else {
+                    // Mostrar lista de formulários para escolher
+                    await carregarListaFormularios();
+                }
+            } catch (error) {
+                showError('respostasTableBody', 'Erro ao carregar respostas: ' + error.message, () => carregarRespostas());
             }
         }
 
@@ -647,10 +727,28 @@
             return tipos[tipo] || tipo;
         }
 
+        // Função para melhorar a experiência do usuário
+        function inicializarPaginaRespostas() {
+            // Verificar se há parâmetro na URL
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            
+            if (id) {
+                console.log('Carregando respostas do formulário ID:', id);
+            } else {
+                console.log('Modo seleção: mostrando lista de formulários');
+            }
+        }
+
         // Inicializar página
+        inicializarPaginaRespostas();
+        
         if (formularioId) {
+            // Modo visualização de respostas específicas
             carregarInfoFormulario();
         }
+        
+        // Sempre chamar carregarRespostas (vai decidir se mostra lista ou respostas)
         carregarRespostas();
     </script>
 </body>
