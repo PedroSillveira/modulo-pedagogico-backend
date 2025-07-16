@@ -1,0 +1,806 @@
+/* ==========================================
+   PUBLIC-COMPONENTS.CSS - COMPONENTES DINÂMICOS PÚBLICOS
+   ========================================== */
+
+/* ================== COMPONENTES JAVASCRIPT PÚBLICOS ================== */
+
+/* ================== FORMULÁRIOS DINÂMICOS ================== */
+
+/* Container Principal do Formulário Dinâmico */
+.formulario-dinamico {
+    background: var(--white);
+    border-radius: 15px;
+    box-shadow: var(--public-shadow-large);
+    overflow: hidden;
+    margin-bottom: var(--spacing-xl);
+}
+
+.formulario-dinamico-header {
+    background: var(--public-gradient-primary);
+    color: var(--white);
+    padding: var(--spacing-xl);
+    text-align: center;
+    position: relative;
+}
+
+.formulario-dinamico-header::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 10px solid var(--public-primary);
+}
+
+.formulario-dinamico-header h2 {
+    margin: 0 0 var(--spacing-sm) 0;
+    font-size: var(--font-size-xxl);
+    font-weight: 700;
+}
+
+.formulario-dinamico-header .prazo-info {
+    background: rgba(255, 255, 255, 0.2);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 25px;
+    display: inline-block;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+}
+
+.formulario-dinamico-body {
+    padding: var(--spacing-xl);
+}
+
+/* Seção de Dados Pessoais */
+.dados-pessoais {
+    background: var(--gray-100);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+    border-left: 4px solid var(--public-primary);
+}
+
+.dados-pessoais h3 {
+    color: var(--gray-900);
+    margin-bottom: var(--spacing-lg);
+    font-size: var(--font-size-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.dados-pessoais h3::before {
+    content: '👤';
+    font-size: var(--font-size-xl);
+}
+
+.dados-pessoais .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
+}
+
+.dados-pessoais .form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.dados-pessoais label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    color: var(--gray-800);
+    font-weight: 600;
+}
+
+.dados-pessoais input {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 2px solid var(--gray-300);
+    border-radius: var(--border-radius-lg);
+    font-size: var(--font-size-base);
+    transition: all var(--transition-base);
+    background: var(--white);
+}
+
+.dados-pessoais input:focus {
+    outline: none;
+    border-color: var(--public-primary);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: scale(1.02);
+}
+
+.dados-pessoais input:invalid {
+    border-color: var(--error-color);
+}
+
+.dados-pessoais input:valid {
+    border-color: var(--success-color);
+}
+
+/* Seção de Perguntas */
+.perguntas-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.perguntas-section h3 {
+    color: var(--gray-900);
+    margin-bottom: var(--spacing-lg);
+    font-size: var(--font-size-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.perguntas-section h3::before {
+    content: '❓';
+    font-size: var(--font-size-xl);
+}
+
+/* Pergunta Individual */
+.pergunta-wrapper {
+    background: var(--white);
+    border: 2px solid var(--gray-200);
+    border-radius: var(--border-radius-xl);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.pergunta-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--public-gradient-primary);
+    transform: scaleX(0);
+    transition: transform var(--transition-base);
+}
+
+.pergunta-wrapper:hover {
+    border-color: var(--public-primary);
+    box-shadow: var(--public-shadow-colored);
+    transform: translateY(-2px);
+}
+
+.pergunta-wrapper:hover::before {
+    transform: scaleX(1);
+}
+
+.pergunta-wrapper.respondida {
+    border-color: var(--success-color);
+    background: rgba(40, 167, 69, 0.02);
+}
+
+.pergunta-wrapper.respondida::before {
+    background: var(--success-color);
+    transform: scaleX(1);
+}
+
+.pergunta-numero {
+    display: inline-block;
+    background: var(--public-primary);
+    color: var(--white);
+    width: 30px;
+    height: 30px;
+    border-radius: var(--border-radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-sm);
+}
+
+.pergunta-titulo {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.4;
+}
+
+.pergunta-titulo .obrigatoria {
+    color: var(--error-color);
+    font-size: var(--font-size-lg);
+    margin-left: var(--spacing-xs);
+}
+
+/* Tipos de Input Específicos */
+
+/* Texto Livre */
+.input-texto {
+    width: 100%;
+    min-height: 100px;
+    padding: var(--spacing-md);
+    border: 2px solid var(--gray-300);
+    border-radius: var(--border-radius-lg);
+    font-size: var(--font-size-base);
+    font-family: inherit;
+    resize: vertical;
+    transition: all var(--transition-base);
+}
+
+.input-texto:focus {
+    outline: none;
+    border-color: var(--public-primary);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.input-texto::placeholder {
+    color: var(--gray-500);
+    font-style: italic;
+}
+
+/* Múltipla Escolha Melhorada */
+.opcoes-grid {
+    display: grid;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+}
+
+.opcao-item-dinamica {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: var(--gray-50);
+    border: 2px solid var(--gray-200);
+    border-radius: var(--border-radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.opcao-item-dinamica::before {
+    content: '';
+    position: absolute;
+    left: -100%;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.opcao-item-dinamica:hover {
+    border-color: var(--public-primary);
+    background: rgba(102, 126, 234, 0.05);
+    transform: translateX(5px);
+}
+
+.opcao-item-dinamica:hover::before {
+    left: 100%;
+}
+
+.opcao-item-dinamica.selecionada {
+    border-color: var(--public-primary);
+    background: rgba(102, 126, 234, 0.1);
+    transform: scale(1.02);
+    box-shadow: var(--shadow-md);
+}
+
+.opcao-item-dinamica input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    accent-color: var(--public-primary);
+}
+
+.opcao-item-dinamica label {
+    flex: 1;
+    margin: 0;
+    cursor: pointer;
+    color: var(--gray-800);
+    font-weight: 500;
+    font-size: var(--font-size-base);
+}
+
+.opcao-item-dinamica.selecionada label {
+    color: var(--public-primary);
+    font-weight: 600;
+}
+
+/* Escalas Melhoradas */
+.escala-dinamica {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin: var(--spacing-lg) 0;
+    flex-wrap: wrap;
+}
+
+.escala-item-dinamica {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.escala-botao-dinamico {
+    width: 50px;
+    height: 50px;
+    border: 3px solid var(--gray-300);
+    border-radius: var(--border-radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: var(--font-size-lg);
+    transition: all var(--transition-base);
+    color: var(--gray-600);
+    background: var(--white);
+    position: relative;
+    overflow: hidden;
+}
+
+.escala-botao-dinamico::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(102, 126, 234, 0.2), transparent);
+    transition: all 0.3s ease;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+}
+
+.escala-botao-dinamico:hover {
+    border-color: var(--public-primary);
+    background: rgba(102, 126, 234, 0.05);
+    transform: scale(1.1);
+}
+
+.escala-botao-dinamico:hover::before {
+    width: 100px;
+    height: 100px;
+}
+
+.escala-botao-dinamico.selecionado {
+    border-color: var(--public-primary);
+    background: var(--public-primary);
+    color: var(--white);
+    transform: scale(1.15);
+    box-shadow: var(--public-shadow-colored);
+}
+
+.escala-label {
+    color: var(--gray-600);
+    font-size: var(--font-size-xs);
+    text-align: center;
+    font-weight: 500;
+    max-width: 60px;
+    line-height: 1.2;
+}
+
+.escala-item-dinamica:hover .escala-label {
+    color: var(--public-primary);
+    font-weight: 600;
+}
+
+/* Sim/Não Especial */
+.sim-nao-container {
+    display: flex;
+    gap: var(--spacing-lg);
+    justify-content: center;
+    margin: var(--spacing-lg) 0;
+}
+
+.sim-nao-opcao {
+    flex: 1;
+    max-width: 200px;
+    padding: var(--spacing-lg);
+    border: 3px solid var(--gray-300);
+    border-radius: var(--border-radius-xl);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    text-align: center;
+    background: var(--white);
+    position: relative;
+    overflow: hidden;
+}
+
+.sim-nao-opcao::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.6s ease;
+}
+
+.sim-nao-opcao:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.sim-nao-opcao:hover::before {
+    left: 100%;
+}
+
+.sim-nao-opcao.sim {
+    border-color: var(--success-color);
+}
+
+.sim-nao-opcao.sim:hover,
+.sim-nao-opcao.sim.selecionada {
+    background: var(--success-color);
+    color: var(--white);
+}
+
+.sim-nao-opcao.nao {
+    border-color: var(--error-color);
+}
+
+.sim-nao-opcao.nao:hover,
+.sim-nao-opcao.nao.selecionada {
+    background: var(--error-color);
+    color: var(--white);
+}
+
+.sim-nao-opcao .icone {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-sm);
+    display: block;
+}
+
+.sim-nao-opcao .texto {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Inputs Numéricos e Datas */
+.input-especial {
+    width: 100%;
+    padding: var(--spacing-md);
+    border: 2px solid var(--gray-300);
+    border-radius: var(--border-radius-lg);
+    font-size: var(--font-size-lg);
+    text-align: center;
+    transition: all var(--transition-base);
+    background: var(--white);
+}
+
+.input-especial:focus {
+    outline: none;
+    border-color: var(--public-primary);
+    box-shadow: 0 0 0 5px rgba(102, 126, 234, 0.1);
+    transform: scale(1.05);
+}
+
+/* ================== PROGRESS INDICATOR ================== */
+
+.progress-formulario {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+    backdrop-filter: blur(10px);
+}
+
+.progress-bar-formulario {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    height: 8px;
+    margin-bottom: var(--spacing-sm);
+    overflow: hidden;
+}
+
+.progress-fill-formulario {
+    background: linear-gradient(90deg, #28a745, #20c997);
+    height: 100%;
+    border-radius: 15px;
+    transition: width 0.5s ease;
+    position: relative;
+}
+
+.progress-fill-formulario::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: progressShine 2s infinite;
+}
+
+@keyframes progressShine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.progress-text {
+    color: var(--white);
+    font-size: var(--font-size-sm);
+    text-align: center;
+    font-weight: 500;
+}
+
+/* ================== BOTÕES DE AÇÃO ================== */
+
+.formulario-actions {
+    background: var(--gray-100);
+    padding: var(--spacing-xl);
+    border-radius: 0 0 15px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.btn-formulario {
+    padding: var(--spacing-md) var(--spacing-xl);
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.btn-formulario::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    transform: translate(-50%, -50%);
+}
+
+.btn-formulario:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-formulario-primary {
+    background: var(--public-gradient-primary);
+    color: var(--white);
+}
+
+.btn-formulario-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--public-shadow-colored);
+    color: var(--white);
+    text-decoration: none;
+}
+
+.btn-formulario-secondary {
+    background: var(--gray-600);
+    color: var(--white);
+}
+
+.btn-formulario-secondary:hover {
+    background: var(--gray-700);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: var(--white);
+    text-decoration: none;
+}
+
+.btn-formulario:disabled {
+    background: var(--gray-400);
+    color: var(--gray-600);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ================== VALIDAÇÃO VISUAL ================== */
+
+.campo-erro {
+    border-color: var(--error-color) !important;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1) !important;
+}
+
+.campo-sucesso {
+    border-color: var(--success-color) !important;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1) !important;
+}
+
+.mensagem-erro {
+    color: var(--error-color);
+    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.mensagem-erro::before {
+    content: '⚠️';
+    font-size: var(--font-size-sm);
+}
+
+.mensagem-sucesso {
+    color: var(--success-color);
+    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.mensagem-sucesso::before {
+    content: '✅';
+    font-size: var(--font-size-sm);
+}
+
+/* ================== RESPONSIVIDADE ================== */
+
+@media (max-width: 768px) {
+    .dados-pessoais .form-row {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+    
+    .formulario-dinamico-header,
+    .formulario-dinamico-body {
+        padding: var(--spacing-lg);
+    }
+    
+    .pergunta-wrapper {
+        padding: var(--spacing-md);
+    }
+    
+    .escala-dinamica {
+        justify-content: center;
+        gap: var(--spacing-xs);
+    }
+    
+    .escala-botao-dinamico {
+        width: 40px;
+        height: 40px;
+        font-size: var(--font-size-base);
+    }
+    
+    .sim-nao-container {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .sim-nao-opcao {
+        max-width: none;
+    }
+    
+    .formulario-actions {
+        flex-direction: column;
+        padding: var(--spacing-lg);
+    }
+    
+    .btn-formulario {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .formulario-dinamico-header h2 {
+        font-size: var(--font-size-xl);
+    }
+    
+    .pergunta-titulo {
+        font-size: var(--font-size-base);
+    }
+    
+    .escala-dinamica {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: var(--spacing-xs);
+    }
+    
+    .escala-botao-dinamico {
+        width: 35px;
+        height: 35px;
+        font-size: var(--font-size-sm);
+    }
+    
+    .escala-label {
+        font-size: 10px;
+    }
+    
+    .opcoes-grid {
+        gap: var(--spacing-xs);
+    }
+    
+    .opcao-item-dinamica {
+        padding: var(--spacing-sm);
+    }
+}
+
+/* ================== ACESSIBILIDADE ================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .pergunta-wrapper,
+    .opcao-item-dinamica,
+    .escala-botao-dinamico,
+    .btn-formulario {
+        transition: none;
+    }
+    
+    .progress-fill-formulario::after {
+        animation: none;
+    }
+}
+
+/* ================== ESTADOS DE LOADING ================== */
+
+.carregando-perguntas {
+    text-align: center;
+    padding: var(--spacing-xxl);
+    color: var(--gray-600);
+}
+
+.carregando-perguntas .spinner {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto var(--spacing-lg);
+    border: 4px solid var(--gray-200);
+    border-top: 4px solid var(--public-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.enviando-formulario {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-modal);
+    backdrop-filter: blur(5px);
+}
+
+.enviando-content {
+    background: var(--white);
+    padding: var(--spacing-xxl);
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: var(--shadow-xl);
+}
+
+.enviando-content .spinner {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto var(--spacing-lg);
+    border: 4px solid var(--gray-200);
+    border-top: 4px solid var(--public-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.enviando-content h3 {
+    color: var(--gray-900);
+    margin: 0;
+    font-size: var(--font-size-lg);
+}
