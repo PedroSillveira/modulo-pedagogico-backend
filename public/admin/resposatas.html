@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Respostas - Sistema Pedagógico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .header {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-logout {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .nav-links {
+            margin-bottom: 20px;
+        }
+
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .page-header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .page-header h2 {
+            color: #333;
+            margin: 0;
+        }
+
+        .formulario-info {
+            background: #e7f3ff;
+            border: 1px solid #0066cc;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .formulario-info h3 {
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 5px;
+        }
+
+        .btn:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        .respostas-table {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .empty {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+        }
+
+        .pontuacao {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 10px;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .resposta-detalhes {
+            margin-bottom: 20px;
+        }
+
+        .resposta-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .resposta-item h4 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .resposta-item p {
+            color: #666;
+            margin: 0;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            table {
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 2% auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Sistema Pedagógico</h1>
+        <div class="user-info">
+            <span id="userName">Carregando...</span>
+            <button class="btn-logout" onclick="logout()">Sair</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="nav-links">
+            <a href="dashboard.html">← Dashboard</a>
+            <a href="formularios.html">Formulários</a>
+        </div>
+
+        <div class="page-header">
+            <h2>📊 Visualizar Respostas</h2>
+        </div>
+
+        <!-- Informações do Formulário (se específico) -->
+        <div id="formularioInfo" class="formulario-info" style="display: none;">
+            <h3 id="formularioTitulo">Carregando...</h3>
+            <p id="formularioDescricao"></p>
+        </div>
+
+        <!-- Estatísticas -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <h4>Total de Respostas</h4>
+                <div class="number" id="totalRespostas">-</div>
+            </div>
+            <div class="stat-card">
+                <h4>Pontuação Média</h4>
+                <div class="number" id="pontuacaoMedia">-</div>
+            </div>
+            <div class="stat-card">
+                <h4>Maior Pontuação</h4>
+                <div class="number" id="maiorPontuacao">-</div>
+            </div>
+            <div class="stat-card">
+                <h4>Menor Pontuação</h4>
+                <div class="number" id="menorPontuacao">-</div>
+            </div>
+        </div>
+
+        <!-- Tabela de Respostas -->
+        <div class="respostas-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Participante</th>
+                        <th>Email</th>
+                        <th>Data/Hora</th>
+                        <th>Pontuação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="respostasTableBody">
+                    <tr>
+                        <td colspan="5" class="loading">Carregando respostas...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para detalhes da resposta -->
+    <div id="detalhesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Detalhes da Resposta</h3>
+                <span class="close" onclick="fecharModal()">&times;</span>
+            </div>
+            <div id="detalhesContent">
+                <div class="loading">Carregando detalhes...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configurações
+        const API_BASE = 'http://localhost:4444';
+        
+        // Verificar autenticação
+        const token = localStorage.getItem('pedagogico_token');
+        const user = JSON.parse(localStorage.getItem('pedagogico_user') || '{}');
+        
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // Mostrar nome do usuário
+        document.getElementById('userName').textContent = user.nome || 'Usuário';
+
+        // Obter ID do formulário da URL (se houver)
+        const urlParams = new URLSearchParams(window.location.search);
+        const formularioId = urlParams.get('id');
+
+        // Função de logout
+        function logout() {
+            localStorage.removeItem('pedagogico_token');
+            localStorage.removeItem('pedagogico_user');
+            window.location.href = 'login.html';
+        }
+
+        // Função para fazer requisições autenticadas
+        async function apiRequest(endpoint, data = {}) {
+            try {
+                const payload = {
+                    payload: {
+                        ...data,
+                        usuario_id: user.id
+                    }
+                };
+
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                
+                if (result.payload) {
+                    const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
+                    
+                    if (!decodedResponse.boleano) {
+                        if (decodedResponse.mensagem.includes('Token inválido')) {
+                            logout();
+                        }
+                        throw new Error(decodedResponse.mensagem);
+                    }
+                    
+                    return decodedResponse.obj;
+                }
+                
+                throw new Error('Resposta inválida do servidor');
+            } catch (error) {
+                console.error('Erro na API:', error);
+                throw error;
+            }
+        }
+
+        // Função para formatar data
+        function formatarData(dataString) {
+            const data = new Date(dataString);
+            return data.toLocaleDateString('pt-BR') + ' às ' + data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+        }
+
+        // Carregar informações do formulário (se específico)
+        async function carregarInfoFormulario() {
+            if (!formularioId) return;
+
+            try {
+                const data = await apiRequest('/pedagogico/buscar_formulario', {
+                    formulario_id: formularioId
+                });
+
+                document.getElementById('formularioTitulo').textContent = data.formulario.titulo;
+                document.getElementById('formularioDescricao').textContent = data.formulario.descricao || 'Sem descrição';
+                document.getElementById('formularioInfo').style.display = 'block';
+
+            } catch (error) {
+                console.error('Erro ao carregar informações do formulário:', error);
+            }
+        }
+
+        // Carregar respostas
+        async function carregarRespostas() {
+            const tbody = document.getElementById('respostasTableBody');
+            
+            try {
+                let respostas;
+                
+                if (formularioId) {
+                    // Carregar respostas de um formulário específico
+                    respostas = await apiRequest('/pedagogico/respostas_formulario', {
+                        formulario_id: formularioId
+                    });
+                } else {
+                    // Carregar todas as respostas (implementar endpoint se necessário)
+                    throw new Error('Visualização geral de respostas não implementada ainda');
+                }
+                
+                if (respostas && respostas.length > 0) {
+                    // Calcular estatísticas
+                    const pontuacoes = respostas.map(r => r.pontos_ganhos);
+                    const total = respostas.length;
+                    const media = Math.round(pontuacoes.reduce((a, b) => a + b, 0) / total);
+                    const maior = Math.max(...pontuacoes);
+                    const menor = Math.min(...pontuacoes);
+
+                    // Atualizar estatísticas
+                    document.getElementById('totalRespostas').textContent = total;
+                    document.getElementById('pontuacaoMedia').textContent = media;
+                    document.getElementById('maiorPontuacao').textContent = maior;
+                    document.getElementById('menorPontuacao').textContent = menor;
+
+                    // Mostrar respostas na tabela
+                    tbody.innerHTML = respostas.map(resposta => `
+                        <tr>
+                            <td><strong>${resposta.participante_nome}</strong></td>
+                            <td>${resposta.participante_email}</td>
+                            <td>${formatarData(resposta.data_resposta)}</td>
+                            <td class="pontuacao">${resposta.pontos_ganhos} pts</td>
+                            <td>
+                                <button class="btn btn-info btn-sm" onclick="verDetalhes(${resposta.id})">
+                                    👁️ Ver Detalhes
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="empty">
+                                Nenhuma resposta encontrada.
+                            </td>
+                        </tr>
+                    `;
+                    
+                    // Zerar estatísticas
+                    document.getElementById('totalRespostas').textContent = '0';
+                    document.getElementById('pontuacaoMedia').textContent = '0';
+                    document.getElementById('maiorPontuacao').textContent = '0';
+                    document.getElementById('menorPontuacao').textContent = '0';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar respostas:', error);
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="error">
+                            Erro ao carregar respostas: ${error.message}
+                            <br><button class="btn" onclick="carregarRespostas()" style="margin-top: 10px;">Tentar Novamente</button>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Ver detalhes de uma resposta
+        async function verDetalhes(respostaFormularioId) {
+            try {
+                const modal = document.getElementById('detalhesModal');
+                const content = document.getElementById('detalhesContent');
+                
+                // Mostrar modal com loading
+                content.innerHTML = '<div class="loading">Carregando detalhes...</div>';
+                modal.style.display = 'block';
+
+                // Carregar detalhes
+                const detalhes = await apiRequest('/pedagogico/detalhes_resposta', {
+                    resposta_formulario_id: respostaFormularioId
+                });
+
+                if (detalhes && detalhes.length > 0) {
+                    content.innerHTML = `
+                        <div class="resposta-detalhes">
+                            ${detalhes.map(item => `
+                                <div class="resposta-item">
+                                    <h4>${item.pergunta_titulo}</h4>
+                                    <p><strong>Tipo:</strong> ${getTipoNome(item.pergunta_tipo)}</p>
+                                    <p><strong>Resposta:</strong> ${item.resposta || 'Não respondido'}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    content.innerHTML = '<div class="error">Nenhum detalhe encontrado.</div>';
+                }
+
+            } catch (error) {
+                console.error('Erro ao carregar detalhes:', error);
+                document.getElementById('detalhesContent').innerHTML = 
+                    `<div class="error">Erro ao carregar detalhes: ${error.message}</div>`;
+            }
+        }
+
+        // Fechar modal
+        function fecharModal() {
+            document.getElementById('detalhesModal').style.display = 'none';
+        }
+
+        // Fechar modal clicando fora
+        window.onclick = function(event) {
+            const modal = document.getElementById('detalhesModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Função para obter nome do tipo
+        function getTipoNome(tipo) {
+            const tipos = {
+                'texto': 'Texto Livre',
+                'multipla_escolha': 'Múltipla Escolha',
+                'escala_1_5': 'Escala 1-5',
+                'escala_1_10': 'Escala 1-10',
+                'sim_nao': 'Sim/Não',
+                'numero': 'Número',
+                'data': 'Data'
+            };
+            return tipos[tipo] || tipo;
+        }
+
+        // Inicializar página
+        if (formularioId) {
+            carregarInfoFormulario();
+        }
+        carregarRespostas();
+    </script>
+</body>
+</html>

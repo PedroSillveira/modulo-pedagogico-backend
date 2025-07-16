@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responder Formulário - Sistema Pedagógico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .nav-links {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.9;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .formulario-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .formulario-header {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .formulario-header h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .formulario-header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .formulario-content {
+            padding: 40px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #667eea;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px;
+            text-align: center;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px;
+            text-align: center;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .form-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .pergunta-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .pergunta-titulo {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .opcoes-container {
+            display: grid;
+            gap: 10px;
+        }
+
+        .opcao-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .opcao-item:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .opcao-item.selected {
+            border-color: #667eea;
+            background: #e7f3ff;
+        }
+
+        .escala-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .escala-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .escala-botao {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .escala-botao:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .escala-botao.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .btn {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: block;
+            margin: 30px auto 0;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .prazo-info {
+            background: #e7f3ff;
+            border: 1px solid #0066cc;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .prazo-info.urgente {
+            background: #ffebee;
+            border-color: #f44336;
+            color: #c62828;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 10px;
+            }
+            
+            .formulario-content {
+                padding: 20px;
+            }
+            
+            .escala-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏆 Sistema de Gamificação Pedagógica</h1>
+        <p>Responda e ganhe pontos!</p>
+    </div>
+
+    <div class="container">
+        <div class="nav-links">
+            <a href="index.html">← Voltar aos Formulários</a>
+        </div>
+
+        <div class="formulario-container">
+            <div id="loadingContainer" class="formulario-content">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <h3>Carregando formulário...</h3>
+                </div>
+            </div>
+
+            <div id="errorContainer" class="hidden">
+                <div class="error">
+                    <h3>❌ Erro ao carregar formulário</h3>
+                    <p id="errorMessage">Erro desconhecido</p>
+                    <button onclick="carregarFormulario()" style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 15px;">
+                        🔄 Tentar Novamente
+                    </button>
+                </div>
+            </div>
+
+            <div id="formularioContainer" class="hidden">
+                <!-- Header do formulário -->
+                <div class="formulario-header">
+                    <h2 id="formularioTitulo">Carregando...</h2>
+                    <p id="formularioDescricao">Carregando...</p>
+                </div>
+
+                <div class="formulario-content">
+                    <!-- Informações sobre prazo -->
+                    <div id="prazoInfo" class="prazo-info"></div>
+
+                    <!-- Aviso se já respondeu -->
+                    <div id="jaRespondeuAviso" class="warning hidden">
+                        <h3>⚠️ Você já respondeu este formulário</h3>
+                        <p>Cada participante pode responder apenas uma vez.</p>
+                        <a href="index.html" style="color: #856404;">← Voltar aos formulários</a>
+                    </div>
+
+                    <!-- Formulário de resposta -->
+                    <form id="respostaForm" class="hidden">
+                        <!-- Dados do participante -->
+                        <div class="form-section">
+                            <h3>👤 Seus Dados</h3>
+                            
+                            <div class="form-group">
+                                <label for="nomeParticipante">
+                                    Nome Completo <span class="required">*</span>
+                                </label>
+                                <input type="text" id="nomeParticipante" required placeholder="Digite seu nome completo">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="emailParticipante">
+                                    Email <span class="required">*</span>
+                                </label>
+                                <input type="email" id="emailParticipante" required placeholder="Digite seu email">
+                            </div>
+                        </div>
+
+                        <!-- Perguntas -->
+                        <div class="form-section">
+                            <h3>📝 Perguntas</h3>
+                            <div id="perguntasContainer">
+                                <!-- Perguntas serão inseridas aqui -->
+                            </div>
+                        </div>
+
+                        <!-- Botão de envio -->
+                        <button type="submit" class="btn" id="btnEnviar">
+                            🚀 Enviar Respostas
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sucesso -->
+            <div id="sucessoContainer" class="hidden">
+                <div class="success">
+                    <h2>🎉 Parabéns!</h2>
+                    <p id="sucessoMessage">Formulário enviado com sucesso!</p>
+                    <div style="margin-top: 20px;">
+                        <a href="index.html" style="background: #28a745; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 10px;">📝 Outros Formulários</a>
+                        <a href="ranking.html" style="background: #667eea; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">🏆 Ver Ranking</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configurações
+        const API_BASE = 'http://localhost:4444';
+        
+        // Obter ID do formulário da URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const formularioId = urlParams.get('id');
+        
+        if (!formularioId) {
+            window.location.href = 'index.html';
+        }
+
+        // Variáveis globais
+        let formularioData = null;
+        let perguntasData = [];
+        let respostas = {};
+
+        // Função para fazer requisições
+        async function apiRequest(endpoint, data = null, method = 'GET') {
+            try {
+                let url = `${API_BASE}${endpoint}`;
+                let options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+
+                if (data && method === 'POST') {
+                    options.body = JSON.stringify(data);
+                }
+
+                const response = await fetch(url, options);
+                const result = await response.json();
+                
+                if (result.payload) {
+                    const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
+                    
+                    if (!decodedResponse.boleano) {
+                        throw new Error(decodedResponse.mensagem);
+                    }
+                    
+                    return decodedResponse.obj;
+                }
+                
+                throw new Error('Resposta inválida do servidor');
+            } catch (error) {
+                console.error('Erro na API:', error);
+                throw error;
+            }
+        }
+
+        // Função para formatar data
+        function formatarData(dataString) {
+            const data = new Date(dataString);
+            return data.toLocaleDateString('pt-BR') + ' às ' + data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+        }
+
+        // Função para calcular tempo restante
+        function calcularTempoRestante(dataLimite) {
+            const agora = new Date();
+            const limite = new Date(dataLimite);
+            const diferenca = limite - agora;
+
+            if (diferenca <= 0) {
+                return { texto: 'Prazo expirado', urgente: true, expirado: true };
+            }
+
+            const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+            if (dias > 0) {
+                return { 
+                    texto: `Prazo: ${formatarData(dataLimite)} (${dias} dia${dias > 1 ? 's' : ''} restante${dias > 1 ? 's' : ''})`,
+                    urgente: dias <= 1,
+                    expirado: false
+                };
+            } else if (horas > 0) {
+                return { 
+                    texto: `Prazo: ${formatarData(dataLimite)} (${horas} hora${horas > 1 ? 's' : ''} restante${horas > 1 ? 's' : ''})`,
+                    urgente: true,
+                    expirado: false
+                };
+            } else {
+                const minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
+                return { 
+                    texto: `Prazo: ${formatarData(dataLimite)} (${minutos} minuto${minutos > 1 ? 's' : ''} restante${minutos > 1 ? 's' : ''})`,
+                    urgente: true,
+                    expirado: false
+                };
+            }
+        }
+
+        // Carregar formulário
+        async function carregarFormulario() {
+            try {
+                // Mostrar loading
+                document.getElementById('loadingContainer').classList.remove('hidden');
+                document.getElementById('errorContainer').classList.add('hidden');
+                document.getElementById('formularioContainer').classList.add('hidden');
+
+                // Carregar dados do formulário
+                const data = await apiRequest('/public/buscar_formulario', {
+                    payload: {
+                        formulario_id: formularioId
+                    }
+                }, 'POST');
+
+                formularioData = data.formulario;
+                perguntasData = data.perguntas;
+
+                // Verificar se não expirou
+                const tempoRestante = calcularTempoRestante(formularioData.data_limite);
+                
+                if (tempoRestante.expirado) {
+                    throw new Error('Este formulário já expirou e não aceita mais respostas.');
+                }
+
+                // Preencher informações
+                document.getElementById('formularioTitulo').textContent = formularioData.titulo;
+                document.getElementById('formularioDescricao').textContent = formularioData.descricao || 'Participe e ganhe pontos!';
+                
+                // Mostrar informações de prazo
+                const prazoInfo = document.getElementById('prazoInfo');
+                prazoInfo.textContent = tempoRestante.texto;
+                if (tempoRestante.urgente) {
+                    prazoInfo.classList.add('urgente');
+                }
+
+                // Gerar perguntas
+                gerarPerguntas();
+
+                // Esconder loading e mostrar formulário
+                document.getElementById('loadingContainer').classList.add('hidden');
+                document.getElementById('formularioContainer').classList.remove('hidden');
+                document.getElementById('respostaForm').classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Erro ao carregar formulário:', error);
+                document.getElementById('loadingContainer').classList.add('hidden');
+                document.getElementById('errorContainer').classList.remove('hidden');
+                document.getElementById('errorMessage').textContent = error.message;
+            }
+        }
+
+        // Gerar perguntas HTML
+        function gerarPerguntas() {
+            const container = document.getElementById('perguntasContainer');
+            
+            container.innerHTML = perguntasData.map(pergunta => {
+                const obrigatoriaLabel = pergunta.obrigatoria ? '<span class="required">*</span>' : '';
+                
+                let inputHtml = '';
+                
+                switch (pergunta.tipo) {
+                    case 'texto':
+                        inputHtml = `<textarea id="pergunta-${pergunta.id}" placeholder="Digite sua resposta..." ${pergunta.obrigatoria ? 'required' : ''}></textarea>`;
+                        break;
+                        
+                    case 'multipla_escolha':
+                        const opcoes = JSON.parse(pergunta.opcoes || '[]');
+                        inputHtml = `
+                            <div class="opcoes-container">
+                                ${opcoes.map((opcao, index) => `
+                                    <div class="opcao-item" onclick="selecionarOpcao(${pergunta.id}, '${opcao}', this)">
+                                        <input type="radio" name="pergunta-${pergunta.id}" value="${opcao}" id="opcao-${pergunta.id}-${index}" ${pergunta.obrigatoria ? 'required' : ''}>
+                                        <label for="opcao-${pergunta.id}-${index}">${opcao}</label>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'escala_1_5':
+                        inputHtml = `
+                            <div class="escala-container">
+                                ${[1,2,3,4,5].map(valor => `
+                                    <div class="escala-item" onclick="selecionarEscala(${pergunta.id}, ${valor})">
+                                        <div class="escala-botao" id="escala-${pergunta.id}-${valor}">${valor}</div>
+                                        <small>${valor === 1 ? 'Muito Ruim' : valor === 5 ? 'Excelente' : ''}</small>
+                                    </div>
+                                `).join('')}
+                                <input type="hidden" id="pergunta-${pergunta.id}" ${pergunta.obrigatoria ? 'required' : ''}>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'escala_1_10':
+                        inputHtml = `
+                            <div class="escala-container">
+                                ${[1,2,3,4,5,6,7,8,9,10].map(valor => `
+                                    <div class="escala-item" onclick="selecionarEscala(${pergunta.id}, ${valor})">
+                                        <div class="escala-botao" id="escala-${pergunta.id}-${valor}">${valor}</div>
+                                    </div>
+                                `).join('')}
+                                <input type="hidden" id="pergunta-${pergunta.id}" ${pergunta.obrigatoria ? 'required' : ''}>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'sim_nao':
+                        inputHtml = `
+                            <div class="opcoes-container">
+                                <div class="opcao-item" onclick="selecionarOpcao(${pergunta.id}, 'Sim', this)">
+                                    <input type="radio" name="pergunta-${pergunta.id}" value="Sim" id="sim-${pergunta.id}" ${pergunta.obrigatoria ? 'required' : ''}>
+                                    <label for="sim-${pergunta.id}">✅ Sim</label>
+                                </div>
+                                <div class="opcao-item" onclick="selecionarOpcao(${pergunta.id}, 'Não', this)">
+                                    <input type="radio" name="pergunta-${pergunta.id}" value="Não" id="nao-${pergunta.id}" ${pergunta.obrigatoria ? 'required' : ''}>
+                                    <label for="nao-${pergunta.id}">❌ Não</label>
+                                </div>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'numero':
+                        inputHtml = `<input type="number" id="pergunta-${pergunta.id}" placeholder="Digite um número..." ${pergunta.obrigatoria ? 'required' : ''}>`;
+                        break;
+                        
+                    case 'data':
+                        inputHtml = `<input type="date" id="pergunta-${pergunta.id}" ${pergunta.obrigatoria ? 'required' : ''}>`;
+                        break;
+                        
+                    default:
+                        inputHtml = `<input type="text" id="pergunta-${pergunta.id}" placeholder="Digite sua resposta..." ${pergunta.obrigatoria ? 'required' : ''}>`;
+                }
+                
+                return `
+                    <div class="pergunta-container">
+                        <div class="pergunta-titulo">
+                            ${pergunta.ordem}. ${pergunta.titulo} ${obrigatoriaLabel}
+                        </div>
+                        ${inputHtml}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Selecionar opção (múltipla escolha / sim-não)
+        function selecionarOpcao(perguntaId, valor, elemento) {
+            // Remover seleção anterior
+            const opcoes = elemento.parentElement.querySelectorAll('.opcao-item');
+            opcoes.forEach(opt => opt.classList.remove('selected'));
+            
+            // Adicionar seleção atual
+            elemento.classList.add('selected');
+            
+            // Marcar radio
+            const radio = elemento.querySelector('input[type="radio"]');
+            radio.checked = true;
+            
+            // Armazenar resposta
+            respostas[perguntaId] = valor;
+        }
+
+        // Selecionar escala
+        function selecionarEscala(perguntaId, valor) {
+            // Remover seleção anterior
+            const pergunta = perguntasData.find(p => p.id === perguntaId);
+            const maxValor = pergunta.tipo === 'escala_1_5' ? 5 : 10;
+            
+            for (let i = 1; i <= maxValor; i++) {
+                const botao = document.getElementById(`escala-${perguntaId}-${i}`);
+                if (botao) botao.classList.remove('selected');
+            }
+            
+            // Adicionar seleção atual
+            const botaoSelecionado = document.getElementById(`escala-${perguntaId}-${valor}`);
+            if (botaoSelecionado) botaoSelecionado.classList.add('selected');
+            
+            // Definir valor no input hidden
+            const input = document.getElementById(`pergunta-${perguntaId}`);
+            input.value = valor;
+            
+            // Armazenar resposta
+            respostas[perguntaId] = valor;
+        }
+
+        // Verificar se já respondeu
+        async function verificarSeJaRespondeu(email) {
+            try {
+                const resultado = await apiRequest('/public/verificar_participacao', {
+                    payload: {
+                        email: email,
+                        formulario_id: formularioId
+                    }
+                }, 'POST');
+
+                return resultado.ja_respondeu;
+            } catch (error) {
+                console.error('Erro ao verificar participação:', error);
+                return false;
+            }
+        }
+
+        // Submeter formulário
+        document.getElementById('respostaForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const nome = document.getElementById('nomeParticipante').value.trim();
+            const email = document.getElementById('emailParticipante').value.trim();
+            
+            if (!nome || !email) {
+                alert('Por favor, preencha seu nome e email!');
+                return;
+            }
+
+            // Verificar se já respondeu
+            const jaRespondeu = await verificarSeJaRespondeu(email);
+            if (jaRespondeu) {
+                document.getElementById('jaRespondeuAviso').classList.remove('hidden');
+                document.getElementById('respostaForm').classList.add('hidden');
+                return;
+            }
+
+            // Coletar respostas
+            const respostasArray = [];
+            
+            perguntasData.forEach(pergunta => {
+                let resposta = respostas[pergunta.id];
+                
+                if (!resposta) {
+                    const elemento = document.getElementById(`pergunta-${pergunta.id}`);
+                    if (elemento) {
+                        resposta = elemento.value;
+                    }
+                }
+                
+                if (pergunta.obrigatoria && (!resposta || resposta.trim() === '')) {
+                    throw new Error(`Por favor, responda a pergunta: ${pergunta.titulo}`);
+                }
+                
+                if (resposta) {
+                    respostasArray.push({
+                        pergunta_id: pergunta.id,
+                        resposta: resposta
+                    });
+                }
+            });
+
+            if (respostasArray.length === 0) {
+                alert('Por favor, responda pelo menos uma pergunta!');
+                return;
+            }
+
+            // Desabilitar botão
+            const btnEnviar = document.getElementById('btnEnviar');
+            btnEnviar.disabled = true;
+            btnEnviar.textContent = '⏳ Enviando...';
+
+            try {
+                const resultado = await apiRequest('/public/responder', {
+                    payload: {
+                        formulario_id: formularioId,
+                        nome: nome,
+                        email: email,
+                        respostas: respostasArray
+                    }
+                }, 'POST');
+
+                // Mostrar sucesso
+                document.getElementById('formularioContainer').classList.add('hidden');
+                document.getElementById('sucessoContainer').classList.remove('hidden');
+                document.getElementById('sucessoMessage').innerHTML = `
+                    <strong>Formulário enviado com sucesso!</strong><br>
+                    Você ganhou <strong>${resultado.pontos_ganhos} pontos</strong>! 🎉
+                `;
+
+            } catch (error) {
+                alert('Erro ao enviar formulário: ' + error.message);
+                btnEnviar.disabled = false;
+                btnEnviar.textContent = '🚀 Enviar Respostas';
+            }
+        });
+
+        // Inicializar
+        carregarFormulario();
+    </script>
+</body>
+</html>

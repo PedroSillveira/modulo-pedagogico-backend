@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking dos Imperadores - Sistema Pedagógico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-intro {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .page-intro h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .page-intro p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .quick-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .quick-link {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .quick-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .search-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: white;
+            background: white;
+        }
+
+        .search-box button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .search-box button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .stats-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            text-align: center;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .ranking-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .ranking-header {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .podium {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .podium-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .podium-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .podium-item.primeiro {
+            order: 2;
+            transform: scale(1.1);
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+        }
+
+        .podium-item.segundo {
+            order: 1;
+            background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
+        }
+
+        .podium-item.terceiro {
+            order: 3;
+            background: linear-gradient(135deg, #cd7f32, #daa855);
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            margin: 0 auto 10px;
+        }
+
+        .podium-item.primeiro .avatar {
+            background: #b8860b;
+        }
+
+        .podium-item.segundo .avatar {
+            background: #708090;
+        }
+
+        .podium-item.terceiro .avatar {
+            background: #8b4513;
+        }
+
+        .medal {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .participante-nome {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .participante-pontos {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .ranking-table {
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .posicao {
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            width: 80px;
+        }
+
+        .participante-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .participante-details h4 {
+            margin: 0;
+            color: #333;
+        }
+
+        .participante-details small {
+            color: #666;
+        }
+
+        .pontuacao {
+            font-weight: bold;
+            color: #667eea;
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px;
+            text-align: center;
+        }
+
+        .empty {
+            text-align: center;
+            color: #666;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .search-result {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .search-result h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .search-result .position {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 10px;
+            }
+            
+            .podium {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .podium-item.primeiro {
+                order: 1;
+                transform: none;
+            }
+            
+            .podium-item.segundo {
+                order: 2;
+            }
+            
+            .podium-item.terceiro {
+                order: 3;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            table {
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏆 Ranking dos Imperadores</h1>
+        <p>Veja quem está dominando o sistema!</p>
+    </div>
+
+    <div class="container">
+        <div class="page-intro">
+            <h2>Classificação Geral</h2>
+            <p>Confira a posição dos participantes e veja se você está entre os melhores!</p>
+        </div>
+
+        <div class="quick-links">
+            <a href="index.html" class="quick-link">📝 Formulários</a>
+            <a href="#buscar" class="quick-link">🔍 Buscar Imperador</a>
+        </div>
+
+        <!-- Busca de Imperador -->
+        <div class="search-container">
+            <h3 style="color: white; margin-bottom: 15px;">🔍 Buscar Imperador</h3>
+            <div class="search-box">
+                <input type="email" id="searchEmail" placeholder="Digite o email do imperador...">
+                <button onclick="buscarImperador()">Buscar</button>
+            </div>
+        </div>
+
+        <!-- Resultado da busca -->
+        <div id="searchResult" class="search-result hidden">
+            <h3 id="searchNome">Nome do Imperador</h3>
+            <div class="position" id="searchPosicao">1º Lugar</div>
+            <p><strong>Pontuação:</strong> <span id="searchPontos">0</span> pontos</p>
+            <p><strong>Email:</strong> <span id="searchEmailResult">email@exemplo.com</span></p>
+            <button onclick="limparBusca()" style="background: #667eea; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 10px;">Limpar Busca</button>
+        </div>
+
+        <!-- Estatísticas -->
+        <div class="stats-bar">
+            <h3 style="text-align: center; margin-bottom: 20px;">📊 Estatísticas do Ranking</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalImperadores">-</div>
+                    <div class="stat-label">Imperadores</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="pontuacaoMedia">-</div>
+                    <div class="stat-label">Pontuação Média</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="maiorPontuacao">-</div>
+                    <div class="stat-label">Maior Pontuação</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalFormularios">-</div>
+                    <div class="stat-label">Formulários Respondidos</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Container do Ranking -->
+        <div id="rankingContainer">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <h3>Carregando ranking...</h3>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configurações
+        const API_BASE = 'http://localhost:4444';
+        
+        // Variáveis globais
+        let rankingCompleto = [];
+
+        // Função para obter iniciais do nome
+        function obterIniciais(nome) {
+            return nome.split(' ')
+                      .map(n => n[0])
+                      .join('')
+                      .substring(0, 2)
+                      .toUpperCase();
+        }
+
+        // Função para fazer requisições
+        async function apiRequest(endpoint, data = null, method = 'GET') {
+            try {
+                let url = `${API_BASE}${endpoint}`;
+                let options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+
+                if (data && method === 'POST') {
+                    options.body = JSON.stringify(data);
+                }
+
+                const response = await fetch(url, options);
+                const result = await response.json();
+                
+                if (result.payload) {
+                    const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
+                    
+                    if (!decodedResponse.boleano) {
+                        throw new Error(decodedResponse.mensagem);
+                    }
+                    
+                    return decodedResponse.obj;
+                }
+                
+                throw new Error('Resposta inválida do servidor');
+            } catch (error) {
+                console.error('Erro na API:', error);
+                throw error;
+            }
+        }
+
+        // Carregar ranking
+        async function carregarRanking() {
+            const container = document.getElementById('rankingContainer');
+            
+            try {
+                const ranking = await apiRequest('/public/ranking');
+                rankingCompleto = ranking;
+                
+                if (ranking && ranking.length > 0) {
+                    // Atualizar estatísticas
+                    const pontuacoes = ranking.map(r => r.pontuacao_total);
+                    const totalFormularios = ranking.reduce((sum, r) => sum + r.total_formularios, 0);
+                    const media = Math.round(pontuacoes.reduce((a, b) => a + b, 0) / ranking.length);
+                    const maior = Math.max(...pontuacoes);
+
+                    document.getElementById('totalImperadores').textContent = ranking.length;
+                    document.getElementById('pontuacaoMedia').textContent = media;
+                    document.getElementById('maiorPontuacao').textContent = maior;
+                    document.getElementById('totalFormularios').textContent = totalFormularios;
+
+                    // Gerar HTML do ranking
+                    mostrarRanking(ranking);
+                } else {
+                    container.innerHTML = `
+                        <div class="empty">
+                            <div class="empty-icon">🏆</div>
+                            <h3>Nenhum Imperador no ranking ainda</h3>
+                            <p>Seja o primeiro a responder formulários e dominar o ranking!</p>
+                            <a href="index.html" style="background: #667eea; color: white; padding: 10px 20px; border-radius: 25px; text-decoration: none; display: inline-block; margin-top: 20px;">
+                                📝 Ver Formulários
+                            </a>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Erro ao carregar ranking:', error);
+                container.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Erro ao carregar ranking</h3>
+                        <p>${error.message}</p>
+                        <button onclick="carregarRanking()" style="background: white; color: #e74c3c; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 15px;">
+                            🔄 Tentar Novamente
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Mostrar ranking
+        function mostrarRanking(ranking) {
+            const container = document.getElementById('rankingContainer');
+            
+            // Top 3 (Pódio)
+            const top3 = ranking.slice(0, 3);
+            let podiumHtml = '';
+            
+            if (top3.length > 0) {
+                podiumHtml = `
+                    <div class="ranking-container">
+                        <div class="ranking-header">
+                            <h3>🏆 Pódio dos Imperadores</h3>
+                        </div>
+                        <div class="podium">
+                            ${top3.map((participante, index) => {
+                                const classes = ['segundo', 'primeiro', 'terceiro'];
+                                const medals = ['🥈', '🥇', '🥉'];
+                                return `
+                                    <div class="podium-item ${classes[index]}">
+                                        <div class="medal">${medals[index]}</div>
+                                        <div class="avatar">${obterIniciais(participante.nome)}</div>
+                                        <div class="participante-nome">${participante.nome}</div>
+                                        <div class="participante-pontos">${participante.pontuacao_total.toLocaleString()} pts</div>
+                                        <small style="color: #666;">${participante.total_formularios} formulário${participante.total_formularios !== 1 ? 's' : ''}</small>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                `;
+            }
+
+            // Tabela completa
+            const tabelaHtml = `
+                        <div class="ranking-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th style="width: 80px; text-align: center;">Posição</th>
+                                        <th>Imperador</th>
+                                        <th style="width: 120px; text-align: center;">Pontuação</th>
+                                        <th style="width: 120px; text-align: center;">Formulários</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${ranking.map((participante, index) => `
+                                        <tr>
+                                            <td class="posicao">
+                                                ${participante.posicao}º
+                                            </td>
+                                            <td>
+                                                <div class="participante-info">
+                                                    <div class="avatar-small">
+                                                        ${obterIniciais(participante.nome)}
+                                                    </div>
+                                                    <div class="participante-details">
+                                                        <h4>${participante.nome}</h4>
+                                                        <small>${participante.email}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pontuacao">
+                                                ${participante.pontuacao_total.toLocaleString()} pts
+                                            </td>
+                                            <td style="text-align: center; color: #666;">
+                                                ${participante.total_formularios}
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+            `;
+
+            container.innerHTML = podiumHtml + tabelaHtml;
+        }
+
+        // Buscar imperador
+        async function buscarImperador() {
+            const email = document.getElementById('searchEmail').value.trim();
+            
+            if (!email) {
+                alert('Por favor, digite um email para buscar!');
+                return;
+            }
+
+            try {
+                const resultado = await apiRequest('/public/buscar_imperador', {
+                    payload: {
+                        email: email
+                    }
+                }, 'POST');
+
+                // Mostrar resultado
+                document.getElementById('searchNome').textContent = resultado.nome;
+                document.getElementById('searchPosicao').textContent = `${resultado.posicao_ranking}º Lugar`;
+                document.getElementById('searchPontos').textContent = resultado.pontuacao_total.toLocaleString();
+                document.getElementById('searchEmailResult').textContent = resultado.email;
+                
+                document.getElementById('searchResult').classList.remove('hidden');
+
+            } catch (error) {
+                alert('Imperador não encontrado: ' + error.message);
+            }
+        }
+
+        // Limpar busca
+        function limparBusca() {
+            document.getElementById('searchEmail').value = '';
+            document.getElementById('searchResult').classList.add('hidden');
+        }
+
+        // Event listener para Enter na busca
+        document.getElementById('searchEmail').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                buscarImperador();
+            }
+        });
+
+        // Scroll suave para busca
+        document.querySelector('a[href="#buscar"]')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector('.search-container').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Carregar ranking ao inicializar
+        carregarRanking();
+    </script>
+</body>
+</html>

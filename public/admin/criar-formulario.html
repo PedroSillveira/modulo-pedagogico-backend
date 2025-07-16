@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Formulário - Sistema Pedagógico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .header {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-logout {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .nav-links {
+            margin-bottom: 20px;
+        }
+
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .form-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 5px 5px 0;
+        }
+
+        .btn:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .pergunta-item {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f9f9f9;
+        }
+
+        .pergunta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .pergunta-header strong {
+            color: #333;
+        }
+
+        .pergunta-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .opcoes-list {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .opcoes-list li {
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Sistema Pedagógico</h1>
+        <div class="user-info">
+            <span id="userName">Carregando...</span>
+            <button class="btn-logout" onclick="logout()">Sair</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="nav-links">
+            <a href="formularios.html">← Voltar aos Formulários</a>
+        </div>
+
+        <!-- Dados do Formulário -->
+        <div class="form-section">
+            <h3>📋 Dados do Formulário</h3>
+            
+            <div class="form-group">
+                <label for="titulo">Título do Formulário *</label>
+                <input type="text" id="titulo" placeholder="Ex: Pesquisa de Satisfação - Evento Q1 2025" required>
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao" placeholder="Descreva o objetivo do formulário..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="dataLimite">Data Limite para Respostas *</label>
+                <input type="datetime-local" id="dataLimite" required>
+            </div>
+        </div>
+
+        <!-- Adicionar Pergunta -->
+        <div class="form-section">
+            <h3>❓ Adicionar Pergunta</h3>
+            
+            <div class="form-group">
+                <label for="perguntaTitulo">Título da Pergunta *</label>
+                <input type="text" id="perguntaTitulo" placeholder="Ex: Como você avalia nosso evento?">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="perguntaTipo">Tipo de Pergunta *</label>
+                    <select id="perguntaTipo" onchange="mostrarOpcoes()">
+                        <option value="">Selecione o tipo</option>
+                        <option value="texto">Texto Livre</option>
+                        <option value="multipla_escolha">Múltipla Escolha</option>
+                        <option value="escala_1_5">Escala 1 a 5</option>
+                        <option value="escala_1_10">Escala 1 a 10</option>
+                        <option value="sim_nao">Sim/Não</option>
+                        <option value="numero">Número</option>
+                        <option value="data">Data</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="perguntaObrigatoria" checked>
+                        Pergunta Obrigatória
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group hidden" id="opcoesGroup">
+                <label for="perguntaOpcoes">Opções (uma por linha)</label>
+                <textarea id="perguntaOpcoes" placeholder="Opção 1&#10;Opção 2&#10;Opção 3"></textarea>
+            </div>
+
+            <button class="btn btn-success" onclick="adicionarPergunta()">+ Adicionar Pergunta</button>
+        </div>
+
+        <!-- Lista de Perguntas -->
+        <div class="form-section">
+            <h3>📝 Perguntas do Formulário (<span id="totalPerguntas">0</span>)</h3>
+            <div id="perguntasList">
+                <p style="color: #666; text-align: center; padding: 20px;">Nenhuma pergunta adicionada ainda.</p>
+            </div>
+        </div>
+
+        <!-- Ações -->
+        <div class="form-section">
+            <button class="btn btn-success" onclick="salvarFormulario()" id="btnSalvar">💾 Salvar Formulário</button>
+            <a href="formularios.html" class="btn btn-secondary">Cancelar</a>
+            
+            <div id="message" style="margin-top: 15px;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configurações
+        const API_BASE = 'http://localhost:4444';
+        
+        // Verificar autenticação
+        const token = localStorage.getItem('pedagogico_token');
+        const user = JSON.parse(localStorage.getItem('pedagogico_user') || '{}');
+        
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // Mostrar nome do usuário
+        document.getElementById('userName').textContent = user.nome || 'Usuário';
+
+        // Array para armazenar perguntas
+        let perguntas = [];
+
+        // Definir data mínima como hoje
+        const agora = new Date();
+        agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
+        document.getElementById('dataLimite').min = agora.toISOString().slice(0, 16);
+
+        // Função de logout
+        function logout() {
+            localStorage.removeItem('pedagogico_token');
+            localStorage.removeItem('pedagogico_user');
+            window.location.href = 'login.html';
+        }
+
+        // Mostrar/esconder opções baseado no tipo
+        function mostrarOpcoes() {
+            const tipo = document.getElementById('perguntaTipo').value;
+            const opcoesGroup = document.getElementById('opcoesGroup');
+            
+            if (tipo === 'multipla_escolha') {
+                opcoesGroup.classList.remove('hidden');
+            } else {
+                opcoesGroup.classList.add('hidden');
+                document.getElementById('perguntaOpcoes').value = '';
+            }
+        }
+
+        // Função para adicionar pergunta
+        function adicionarPergunta() {
+            const titulo = document.getElementById('perguntaTitulo').value.trim();
+            const tipo = document.getElementById('perguntaTipo').value;
+            const obrigatoria = document.getElementById('perguntaObrigatoria').checked;
+            const opcoes = document.getElementById('perguntaOpcoes').value.trim();
+
+            if (!titulo || !tipo) {
+                showMessage('Por favor, preencha o título e tipo da pergunta!', 'error');
+                return;
+            }
+
+            if (tipo === 'multipla_escolha' && !opcoes) {
+                showMessage('Por favor, adicione as opções para múltipla escolha!', 'error');
+                return;
+            }
+
+            // Criar objeto da pergunta
+            const pergunta = {
+                titulo: titulo,
+                tipo: tipo,
+                obrigatoria: obrigatoria,
+                opcoes: tipo === 'multipla_escolha' ? opcoes.split('\n').filter(o => o.trim()) : null,
+                ordem: perguntas.length + 1
+            };
+
+            // Adicionar à lista
+            perguntas.push(pergunta);
+
+            // Limpar campos
+            document.getElementById('perguntaTitulo').value = '';
+            document.getElementById('perguntaTipo').value = '';
+            document.getElementById('perguntaOpcoes').value = '';
+            document.getElementById('perguntaObrigatoria').checked = true;
+            document.getElementById('opcoesGroup').classList.add('hidden');
+
+            // Atualizar lista visual
+            atualizarListaPerguntas();
+            showMessage('Pergunta adicionada com sucesso!', 'success');
+        }
+
+        // Função para remover pergunta
+        function removerPergunta(index) {
+            if (confirm('Remover esta pergunta?')) {
+                perguntas.splice(index, 1);
+                // Reordenar
+                perguntas.forEach((p, i) => p.ordem = i + 1);
+                atualizarListaPerguntas();
+                showMessage('Pergunta removida!', 'success');
+            }
+        }
+
+        // Função para mover pergunta
+        function moverPergunta(index, direcao) {
+            const novoIndex = index + direcao;
+            
+            if (novoIndex >= 0 && novoIndex < perguntas.length) {
+                [perguntas[index], perguntas[novoIndex]] = [perguntas[novoIndex], perguntas[index]];
+                // Reordenar
+                perguntas.forEach((p, i) => p.ordem = i + 1);
+                atualizarListaPerguntas();
+            }
+        }
+
+        // Função para atualizar lista visual de perguntas
+        function atualizarListaPerguntas() {
+            const lista = document.getElementById('perguntasList');
+            const total = document.getElementById('totalPerguntas');
+            
+            total.textContent = perguntas.length;
+
+            if (perguntas.length === 0) {
+                lista.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Nenhuma pergunta adicionada ainda.</p>';
+                return;
+            }
+
+            lista.innerHTML = perguntas.map((pergunta, index) => `
+                <div class="pergunta-item">
+                    <div class="pergunta-header">
+                        <strong>${pergunta.ordem}. ${pergunta.titulo}</strong>
+                        <div class="pergunta-actions">
+                            ${index > 0 ? `<button class="btn" onclick="moverPergunta(${index}, -1)" title="Mover para cima">↑</button>` : ''}
+                            ${index < perguntas.length - 1 ? `<button class="btn" onclick="moverPergunta(${index}, 1)" title="Mover para baixo">↓</button>` : ''}
+                            <button class="btn btn-danger" onclick="removerPergunta(${index})">🗑️</button>
+                        </div>
+                    </div>
+                    <div>
+                        <small><strong>Tipo:</strong> ${getTipoNome(pergunta.tipo)} | 
+                        <strong>Obrigatória:</strong> ${pergunta.obrigatoria ? 'Sim' : 'Não'}</small>
+                        ${pergunta.opcoes ? `
+                            <div class="opcoes-list">
+                                <strong>Opções:</strong>
+                                <ul>
+                                    ${pergunta.opcoes.map(opcao => `<li>${opcao}</li>`).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Função para obter nome do tipo
+        function getTipoNome(tipo) {
+            const tipos = {
+                'texto': 'Texto Livre',
+                'multipla_escolha': 'Múltipla Escolha',
+                'escala_1_5': 'Escala 1-5',
+                'escala_1_10': 'Escala 1-10',
+                'sim_nao': 'Sim/Não',
+                'numero': 'Número',
+                'data': 'Data'
+            };
+            return tipos[tipo] || tipo;
+        }
+
+        // Função para mostrar mensagem
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="${type}">${text}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        // Função para fazer requisições autenticadas
+        async function apiRequest(endpoint, data = {}) {
+            try {
+                const payload = {
+                    payload: {
+                        ...data,
+                        usuario_id: user.id
+                    }
+                };
+
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                
+                if (result.payload) {
+                    const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
+                    
+                    if (!decodedResponse.boleano) {
+                        if (decodedResponse.mensagem.includes('Token inválido')) {
+                            logout();
+                        }
+                        throw new Error(decodedResponse.mensagem);
+                    }
+                    
+                    return decodedResponse.obj;
+                }
+                
+                throw new Error('Resposta inválida do servidor');
+            } catch (error) {
+                console.error('Erro na API:', error);
+                throw error;
+            }
+        }
+
+        // Função para salvar formulário
+        async function salvarFormulario() {
+            const titulo = document.getElementById('titulo').value.trim();
+            const descricao = document.getElementById('descricao').value.trim();
+            const dataLimite = document.getElementById('dataLimite').value;
+
+            if (!titulo || !dataLimite) {
+                showMessage('Por favor, preencha título e data limite!', 'error');
+                return;
+            }
+
+            if (perguntas.length === 0) {
+                showMessage('Adicione pelo menos uma pergunta!', 'error');
+                return;
+            }
+
+            const btnSalvar = document.getElementById('btnSalvar');
+            btnSalvar.disabled = true;
+            btnSalvar.textContent = 'Salvando...';
+
+            try {
+                // Criar formulário
+                const formularioData = await apiRequest('/pedagogico/criar_formulario', {
+                    titulo: titulo,
+                    descricao: descricao,
+                    data_limite: dataLimite
+                });
+
+                const formularioId = formularioData.formulario_id;
+
+                // Criar perguntas
+                for (const pergunta of perguntas) {
+                    await apiRequest('/pedagogico/criar_pergunta', {
+                        formulario_id: formularioId,
+                        titulo: pergunta.titulo,
+                        tipo: pergunta.tipo,
+                        opcoes: pergunta.opcoes ? JSON.stringify(pergunta.opcoes) : null,
+                        ordem: pergunta.ordem,
+                        obrigatoria: pergunta.obrigatoria
+                    });
+                }
+
+                showMessage('Formulário criado com sucesso!', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'formularios.html';
+                }, 2000);
+
+            } catch (error) {
+                showMessage('Erro ao salvar formulário: ' + error.message, 'error');
+            } finally {
+                btnSalvar.disabled = false;
+                btnSalvar.textContent = '💾 Salvar Formulário';
+            }
+        }
+    </script>
+</body>
+</html>

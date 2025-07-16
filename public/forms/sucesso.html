@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sucesso! - Sistema Pedagógico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-header {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 40px 30px;
+            position: relative;
+        }
+
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 1s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .success-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .success-header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .success-content {
+            padding: 40px 30px;
+        }
+
+        .points-display {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .points-display::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 20%, transparent 70%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
+        }
+
+        .points-number {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .points-label {
+            font-size: 16px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .info-card p {
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 10px 25px rgba(108, 117, 125, 0.4);
+        }
+
+        .motivational-message {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border: 1px solid #2196f3;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .motivational-message h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .motivational-message p {
+            color: #0d47a1;
+            line-height: 1.5;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #667eea;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #28a745, #20c997);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 2s ease-in-out;
+            animation: progressAnimation 2s ease-in-out;
+        }
+
+        @keyframes progressAnimation {
+            from { width: 0%; }
+        }
+
+        @media (max-width: 768px) {
+            .success-container {
+                margin: 20px;
+                width: calc(100% - 40px);
+            }
+            
+            .success-header {
+                padding: 30px 20px;
+            }
+            
+            .success-content {
+                padding: 30px 20px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .points-number {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-header">
+            <div class="success-icon">🎉</div>
+            <h1>Parabéns, Imperador!</h1>
+            <p>Sua participação foi registrada com sucesso!</p>
+        </div>
+
+        <div class="success-content">
+            <!-- Pontos Ganhos -->
+            <div class="points-display">
+                <div class="points-number" id="pontosGanhos">150</div>
+                <div class="points-label">Pontos Conquistados!</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 75%;"></div>
+                </div>
+            </div>
+
+            <!-- Informações -->
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>📊 Sua Posição</h3>
+                    <p id="posicaoAtual">Carregando...</p>
+                    <p><small>No ranking geral</small></p>
+                </div>
+                <div class="info-card">
+                    <h3>🏆 Total de Pontos</h3>
+                    <p id="totalPontos">Carregando...</p>
+                    <p><small>Pontuação acumulada</small></p>
+                </div>
+            </div>
+
+            <!-- Mensagem Motivacional -->
+            <div class="motivational-message">
+                <h3>🚀 Continue Conquistando!</h3>
+                <p id="mensagemMotivacional">
+                    Excelente participação! Continue respondendo formulários para subir no ranking 
+                    e se tornar o próximo Imperador do sistema!
+                </p>
+            </div>
+
+            <!-- Ações -->
+            <div class="action-buttons">
+                <a href="index.html" class="btn">
+                    📝 Responder Outros Formulários
+                </a>
+                <a href="ranking.html" class="btn btn-secondary">
+                    🏆 Ver Ranking Completo
+                </a>
+            </div>
+
+            <!-- Loading para buscar dados -->
+            <div id="loadingDados" class="loading">
+                <div class="loading-spinner"></div>
+                <p>Atualizando sua posição no ranking...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configurações
+        const API_BASE = 'http://localhost:4444';
+        
+        // Obter parâmetros da URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const pontos = urlParams.get('pontos') || '100';
+        const email = urlParams.get('email') || '';
+        
+        // Atualizar pontos na tela
+        document.getElementById('pontosGanhos').textContent = pontos;
+
+        // Função para fazer requisições
+        async function apiRequest(endpoint, data = null, method = 'GET') {
+            try {
+                let url = `${API_BASE}${endpoint}`;
+                let options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+
+                if (data && method === 'POST') {
+                    options.body = JSON.stringify(data);
+                }
+
+                const response = await fetch(url, options);
+                const result = await response.json();
+                
+                if (result.payload) {
+                    const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
+                    
+                    if (!decodedResponse.boleano) {
+                        throw new Error(decodedResponse.mensagem);
+                    }
+                    
+                    return decodedResponse.obj;
+                }
+                
+                throw new Error('Resposta inválida do servidor');
+            } catch (error) {
+                console.error('Erro na API:', error);
+                throw error;
+            }
+        }
+
+        // Buscar dados do usuário
+        async function buscarDadosUsuario() {
+            if (!email) {
+                document.getElementById('loadingDados').style.display = 'none';
+                return;
+            }
+
+            try {
+                const resultado = await apiRequest('/public/buscar_imperador', {
+                    payload: {
+                        email: email
+                    }
+                }, 'POST');
+
+                // Atualizar informações
+                document.getElementById('posicaoAtual').innerHTML = `
+                    <strong>${resultado.posicao_ranking}º lugar</strong>
+                `;
+                
+                document.getElementById('totalPontos').innerHTML = `
+                    <strong>${resultado.pontuacao_total.toLocaleString()} pontos</strong>
+                `;
+
+                // Mensagem motivacional baseada na posição
+                let mensagem = '';
+                if (resultado.posicao_ranking <= 3) {
+                    mensagem = `🔥 Incrível! Você está no TOP 3! Continue dominando o ranking e mantenha sua posição de elite!`;
+                } else if (resultado.posicao_ranking <= 10) {
+                    mensagem = `⭐ Excelente! Você está no TOP 10! Continue se esforçando para chegar ao pódio!`;
+                } else if (resultado.posicao_ranking <= 50) {
+                    mensagem = `💪 Muito bem! Você está entre os melhores participantes. Continue participando para subir ainda mais!`;
+                } else {
+                    mensagem = `🚀 Ótimo trabalho! Continue respondendo formulários para escalar o ranking e se tornar um Imperador de elite!`;
+                }
+                
+                document.getElementById('mensagemMotivacional').textContent = mensagem;
+
+            } catch (error) {
+                console.error('Erro ao buscar dados do usuário:', error);
+                document.getElementById('posicaoAtual').textContent = 'Indisponível';
+                document.getElementById('totalPontos').textContent = 'Indisponível';
+            } finally {
+                document.getElementById('loadingDados').style.display = 'none';
+            }
+        }
+
+        // Efeitos visuais
+        function adicionarEfeitosVisuais() {
+            // Confete animado (simulado com emojis)
+            const confetes = ['🎉', '🎊', '⭐', '🏆', '💫'];
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    criarConfete(confetes[Math.floor(Math.random() * confetes.length)]);
+                }, i * 200);
+            }
+        }
+
+        function criarConfete(emoji) {
+            const confete = document.createElement('div');
+            confete.textContent = emoji;
+            confete.style.position = 'fixed';
+            confete.style.left = Math.random() * 100 + 'vw';
+            confete.style.top = '-20px';
+            confete.style.fontSize = '30px';
+            confete.style.zIndex = '9999';
+            confete.style.pointerEvents = 'none';
+            confete.style.animation = 'fall 3s linear forwards';
+            
+            document.body.appendChild(confete);
+            
+            setTimeout(() => {
+                confete.remove();
+            }, 3000);
+        }
+
+        // CSS para animação de queda
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fall {
+                to {
+                    transform: translateY(100vh) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Executar ao carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Buscar dados do usuário se email fornecido
+            if (email) {
+                buscarDadosUsuario();
+            } else {
+                document.getElementById('loadingDados').style.display = 'none';
+                document.getElementById('posicaoAtual').textContent = 'Faça login para ver';
+                document.getElementById('totalPontos').textContent = 'Faça login para ver';
+            }
+            
+            // Adicionar efeitos visuais
+            setTimeout(adicionarEfeitosVisuais, 500);
+        });
+
+        // Mensagens motivacionais aleatórias caso não tenha email
+        if (!email) {
+            const mensagensMotivacionais = [
+                "Continue participando dos formulários para acumular mais pontos e subir no ranking!",
+                "Cada formulário respondido é uma oportunidade de se tornar o próximo Imperador!",
+                "Sua participação faz a diferença! Continue conquistando pontos!",
+                "O caminho para o topo do ranking continua! Responda mais formulários!",
+                "Excelente trabalho! Continue assim e logo estará entre os melhores!"
+            ];
+            
+            const mensagemAleatoria = mensagensMotivacionais[Math.floor(Math.random() * mensagensMotivacionais.length)];
+            document.getElementById('mensagemMotivacional').textContent = mensagemAleatoria;
+        }
+    </script>
+</body>
+</html>

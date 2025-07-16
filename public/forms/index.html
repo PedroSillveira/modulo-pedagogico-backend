@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulários Disponíveis - Sistema Pedagógico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-intro {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .page-intro h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .page-intro p {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .quick-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .quick-link {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .quick-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .formularios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .formulario-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .formulario-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .formulario-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .formulario-header {
+            margin-bottom: 15px;
+        }
+
+        .formulario-header h3 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .formulario-header .prazo {
+            color: #666;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .formulario-content {
+            margin-bottom: 20px;
+        }
+
+        .formulario-content p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .formulario-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .tempo-restante {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .tempo-restante.urgente {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .empty {
+            text-align: center;
+            color: white;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+
+        .empty h3 {
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .empty p {
+            opacity: 0.8;
+            font-size: 16px;
+        }
+
+        .stats-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .stats-bar h3 {
+            margin-bottom: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 10px;
+            }
+            
+            .formularios-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .formulario-card {
+                padding: 20px;
+            }
+            
+            .quick-links {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏆 Sistema de Gamificação Pedagógica</h1>
+        <p>Responda formulários e torne-se um Imperador!</p>
+    </div>
+
+    <div class="container">
+        <div class="page-intro">
+            <h2>Formulários Disponíveis</h2>
+            <p>Participe dos formulários abaixo e acumule pontos para subir no ranking!</p>
+        </div>
+
+        <div class="quick-links">
+            <a href="ranking.html" class="quick-link">🏆 Ver Ranking</a>
+            <a href="#estatisticas" class="quick-link">📊 Estatísticas</a>
+        </div>
+
+        <!-- Estatísticas -->
+        <div id="statsBar" class="stats-bar" style="display: none;">
+            <h3>📊 Estatísticas do Sistema</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalFormularios">-</div>
+                    <div class="stat-label">Formulários Ativos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalParticipantes">-</div>
+                    <div class="stat-label">Participantes</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalRespostas">-</div>
+                    <div class="stat-label">Respostas</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Formulários -->
+        <div id="formulariosContainer">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <h3>Carregando formulários disponíveis...</h3>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configurações
+        const API_BASE = 'http://localhost:4444';
+
+        // Função para formatar data
+        function formatarData(dataString) {
+            const data = new Date(dataString);
+            return data.toLocaleDateString('pt-BR') + ' às ' + data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+        }
+
+        // Função para calcular tempo restante
+        function calcularTempoRestante(dataLimite) {
+            const agora = new Date();
+            const limite = new Date(dataLimite);
+            const diferenca = limite - agora;
+
+            if (diferenca <= 0) {
+                return { texto: 'Expirado', urgente: true };
+            }
+
+            const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+            if (dias > 0) {
+                return { 
+                    texto: `${dias} dia${dias > 1 ? 's' : ''} restante${dias > 1 ? 's' : ''}`,
+                    urgente: dias <= 1
+                };
+            } else if (horas > 0) {
+                return { 
+                    texto: `${horas} hora${horas > 1 ? 's' : ''} restante${horas > 1 ? 's' : ''}`,
+                    urgente: true
+                };
+            } else {
+                const minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
+                return { 
+                    texto: `${minutos} minuto${minutos > 1 ? 's' : ''} restante${minutos > 1 ? 's' : ''}`,
+                    urgente: true
+                };
+            }
+        }
+
+        // Carregar estatísticas
+        async function carregarEstatisticas() {
+            try {
+                const response = await fetch(`${API_BASE}/public/estatisticas`);
+                const result = await response.json();
+                
+                if (result.payload) {
+                    const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
+                    
+                    if (decodedResponse.boleano) {
+                        const stats = decodedResponse.obj;
+                        
+                        document.getElementById('totalFormularios').textContent = stats.formularios_ativos || 0;
+                        document.getElementById('totalParticipantes').textContent = stats.total_participantes || 0;
+                        document.getElementById('totalRespostas').textContent = stats.total_respostas || 0;
+                        
+                        document.getElementById('statsBar').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao carregar estatísticas:', error);
+            }
+        }
+
+        // Carregar formulários
+        async function carregarFormularios() {
+            const container = document.getElementById('formulariosContainer');
+            
+            try {
+                const response = await fetch(`${API_BASE}/public/formularios`);
+                const result = await response.json();
+                
+                if (result.payload) {
+                    const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
+                    
+                    if (decodedResponse.boleano) {
+                        const formularios = decodedResponse.obj;
+                        
+                        if (formularios && formularios.length > 0) {
+                            container.innerHTML = `
+                                <div class="formularios-grid">
+                                    ${formularios.map(form => {
+                                        const tempoRestante = calcularTempoRestante(form.data_limite);
+                                        
+                                        return `
+                                            <div class="formulario-card">
+                                                <div class="formulario-header">
+                                                    <h3>${form.titulo}</h3>
+                                                    <div class="prazo">
+                                                        🕒 Prazo: ${formatarData(form.data_limite)}
+                                                    </div>
+                                                </div>
+                                                <div class="formulario-content">
+                                                    <p>${form.descricao || 'Participe e ganhe pontos!'}</p>
+                                                </div>
+                                                <div class="formulario-actions">
+                                                    <a href="formulario.html?id=${form.id}" class="btn">
+                                                        📝 Responder
+                                                    </a>
+                                                    <div class="tempo-restante ${tempoRestante.urgente ? 'urgente' : ''}">
+                                                        ${tempoRestante.texto}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            `;
+                        } else {
+                            container.innerHTML = `
+                                <div class="empty">
+                                    <div class="empty-icon">📝</div>
+                                    <h3>Nenhum formulário disponível</h3>
+                                    <p>No momento não há formulários ativos para responder.</p>
+                                    <p>Volte em breve para novas oportunidades!</p>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        throw new Error(decodedResponse.mensagem);
+                    }
+                } else {
+                    throw new Error('Resposta inválida do servidor');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar formulários:', error);
+                container.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Erro ao carregar formulários</h3>
+                        <p>${error.message}</p>
+                        <button onclick="carregarFormularios()" style="background: white; color: #e74c3c; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 15px;">
+                            🔄 Tentar Novamente
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Scroll suave para estatísticas
+        document.querySelector('a[href="#estatisticas"]')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('statsBar').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Carregar dados ao inicializar
+        carregarFormularios();
+        carregarEstatisticas();
+
+        // Atualizar tempo restante a cada minuto
+        setInterval(() => {
+            const temposRestantes = document.querySelectorAll('.tempo-restante');
+            temposRestantes.forEach(elemento => {
+                // Recarregar página se necessário (implementação simplificada)
+                // Em uma versão mais avançada, atualizaria apenas os tempos
+            });
+        }, 60000); // 1 minuto
+    </script>
+</body>
+</html>

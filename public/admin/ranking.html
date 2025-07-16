@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking - Sistema Pedagógico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .header {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-logout {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .nav-links {
+            margin-bottom: 20px;
+        }
+
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .page-header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h2 {
+            color: #333;
+            margin: 0;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-box input {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            width: 300px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .ranking-table {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .posicao {
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            width: 80px;
+        }
+
+        .posicao.top3 {
+            font-size: 18px;
+        }
+
+        .posicao.primeiro {
+            color: #ffd700;
+        }
+
+        .posicao.segundo {
+            color: #c0c0c0;
+        }
+
+        .posicao.terceiro {
+            color: #cd7f32;
+        }
+
+        .participante-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .participante-details h4 {
+            margin: 0;
+            color: #333;
+        }
+
+        .participante-details small {
+            color: #666;
+        }
+
+        .pontuacao {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .formularios-count {
+            text-align: center;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .empty {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .medal {
+            margin-right: 5px;
+        }
+
+        .filter-info {
+            background: #e7f3ff;
+            border: 1px solid #0066cc;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .filter-info.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+            
+            table {
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+            }
+            
+            .participante-info {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Sistema Pedagógico</h1>
+        <div class="user-info">
+            <span id="userName">Carregando...</span>
+            <button class="btn-logout" onclick="logout()">Sair</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="nav-links">
+            <a href="dashboard.html">← Dashboard</a>
+            <a href="formularios.html">Formulários</a>
+            <a href="respostas.html">Respostas</a>
+        </div>
+
+        <div class="page-header">
+            <h2>🏆 Ranking dos Imperadores</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Buscar por nome ou email..." onkeyup="filtrarRanking()">
+            </div>
+        </div>
+
+        <!-- Informação de filtro -->
+        <div id="filterInfo" class="filter-info">
+            <strong>Filtro ativo:</strong> <span id="filterText"></span>
+            <button onclick="limparFiltro()" style="margin-left: 10px; background: none; border: none; color: #0066cc; cursor: pointer;">✖ Limpar</button>
+        </div>
+
+        <!-- Estatísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total de Imperadores</h3>
+                <div class="number" id="totalImperadores">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Pontuação Média</h3>
+                <div class="number" id="pontuacaoMedia">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Maior Pontuação</h3>
+                <div class="number" id="maiorPontuacao">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Respostas Totais</h3>
+                <div class="number" id="totalRespostas">-</div>
+            </div>
+        </div>
+
+        <!-- Tabela do Ranking -->
+        <div class="ranking-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 80px; text-align: center;">Posição</th>
+                        <th>Imperador</th>
+                        <th style="width: 120px; text-align: center;">Pontuação</th>
+                        <th style="width: 120px; text-align: center;">Formulários</th>
+                    </tr>
+                </thead>
+                <tbody id="rankingTableBody">
+                    <tr>
+                        <td colspan="4" class="loading">Carregando ranking...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Configurações
+        const API_BASE = 'http://localhost:4444';
+        
+        // Verificar autenticação
+        const token = localStorage.getItem('pedagogico_token');
+        const user = JSON.parse(localStorage.getItem('pedagogico_user') || '{}');
+        
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // Mostrar nome do usuário
+        document.getElementById('userName').textContent = user.nome || 'Usuário';
+
+        // Variáveis globais
+        let rankingCompleto = [];
+        let rankingFiltrado = [];
+
+        // Função de logout
+        function logout() {
+            localStorage.removeItem('pedagogico_token');
+            localStorage.removeItem('pedagogico_user');
+            window.location.href = 'login.html';
+        }
+
+        // Função para fazer requisições autenticadas
+        async function apiRequest(endpoint, data = {}) {
+            try {
+                const payload = {
+                    payload: {
+                        ...data,
+                        usuario_id: user.id
+                    }
+                };
+
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                
+                if (result.payload) {
+                    const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
+                    
+                    if (!decodedResponse.boleano) {
+                        if (decodedResponse.mensagem.includes('Token inválido')) {
+                            logout();
+                        }
+                        throw new Error(decodedResponse.mensagem);
+                    }
+                    
+                    return decodedResponse.obj;
+                }
+                
+                throw new Error('Resposta inválida do servidor');
+            } catch (error) {
+                console.error('Erro na API:', error);
+                throw error;
+            }
+        }
+
+        // Função para obter iniciais do nome
+        function obterIniciais(nome) {
+            return nome.split(' ')
+                      .map(n => n[0])
+                      .join('')
+                      .substring(0, 2)
+                      .toUpperCase();
+        }
+
+        // Função para obter medalha
+        function obterMedalha(posicao) {
+            switch(posicao) {
+                case 1: return '<span class="medal">🥇</span>';
+                case 2: return '<span class="medal">🥈</span>';
+                case 3: return '<span class="medal">🥉</span>';
+                default: return '';
+            }
+        }
+
+        // Função para obter classe da posição
+        function obterClassePosicao(posicao) {
+            let classes = ['posicao'];
+            if (posicao <= 3) {
+                classes.push('top3');
+                if (posicao === 1) classes.push('primeiro');
+                else if (posicao === 2) classes.push('segundo');
+                else if (posicao === 3) classes.push('terceiro');
+            }
+            return classes.join(' ');
+        }
+
+        // Carregar ranking
+        async function carregarRanking() {
+            const tbody = document.getElementById('rankingTableBody');
+            
+            try {
+                const ranking = await apiRequest('/pedagogico/ranking_global');
+                
+                if (ranking && ranking.length > 0) {
+                    rankingCompleto = ranking;
+                    rankingFiltrado = [...ranking];
+                    
+                    // Calcular estatísticas
+                    const pontuacoes = ranking.map(r => r.pontuacao_total);
+                    const totalFormularios = ranking.reduce((sum, r) => sum + r.total_formularios, 0);
+                    const media = Math.round(pontuacoes.reduce((a, b) => a + b, 0) / ranking.length);
+                    const maior = Math.max(...pontuacoes);
+
+                    // Atualizar estatísticas
+                    document.getElementById('totalImperadores').textContent = ranking.length;
+                    document.getElementById('pontuacaoMedia').textContent = media;
+                    document.getElementById('maiorPontuacao').textContent = maior;
+                    document.getElementById('totalRespostas').textContent = totalFormularios;
+
+                    // Mostrar ranking
+                    mostrarRanking(rankingFiltrado);
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="empty">
+                                <div class="empty-icon">🏆</div>
+                                <h3>Nenhum Imperador no ranking ainda</h3>
+                                <p>Quando participantes responderem formulários, eles aparecerão aqui!</p>
+                            </td>
+                        </tr>
+                    `;
+                    
+                    // Zerar estatísticas
+                    document.getElementById('totalImperadores').textContent = '0';
+                    document.getElementById('pontuacaoMedia').textContent = '0';
+                    document.getElementById('maiorPontuacao').textContent = '0';
+                    document.getElementById('totalRespostas').textContent = '0';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar ranking:', error);
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="error">
+                            Erro ao carregar ranking: ${error.message}
+                            <br><button onclick="carregarRanking()" style="margin-top: 10px; background: #667eea; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Tentar Novamente</button>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Mostrar ranking na tabela
+        function mostrarRanking(dados) {
+            const tbody = document.getElementById('rankingTableBody');
+            
+            if (dados.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty">
+                            <div class="empty-icon">🔍</div>
+                            <h3>Nenhum resultado encontrado</h3>
+                            <p>Tente ajustar sua busca.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = dados.map((participante, index) => `
+                <tr>
+                    <td class="${obterClassePosicao(participante.posicao)}">
+                        ${obterMedalha(participante.posicao)}${participante.posicao}º
+                    </td>
+                    <td>
+                        <div class="participante-info">
+                            <div class="avatar">
+                                ${obterIniciais(participante.nome)}
+                            </div>
+                            <div class="participante-details">
+                                <h4>${participante.nome}</h4>
+                                <small>${participante.email}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="pontuacao">
+                        ${participante.pontuacao_total.toLocaleString()} pts
+                    </td>
+                    <td class="formularios-count">
+                        ${participante.total_formularios}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Filtrar ranking
+        function filtrarRanking() {
+            const termo = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filterInfo = document.getElementById('filterInfo');
+            const filterText = document.getElementById('filterText');
+            
+            if (termo === '') {
+                rankingFiltrado = [...rankingCompleto];
+                filterInfo.classList.remove('active');
+            } else {
+                rankingFiltrado = rankingCompleto.filter(participante => 
+                    participante.nome.toLowerCase().includes(termo) ||
+                    participante.email.toLowerCase().includes(termo)
+                );
+                
+                filterInfo.classList.add('active');
+                filterText.textContent = `"${termo}" (${rankingFiltrado.length} resultado${rankingFiltrado.length !== 1 ? 's' : ''})`;
+            }
+            
+            mostrarRanking(rankingFiltrado);
+        }
+
+        // Limpar filtro
+        function limparFiltro() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterInfo').classList.remove('active');
+            rankingFiltrado = [...rankingCompleto];
+            mostrarRanking(rankingFiltrado);
+        }
+
+        // Event listener para Enter na busca
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                filtrarRanking();
+            }
+        });
+
+        // Carregar ranking ao inicializar
+        carregarRanking();
+    </script>
+</body>
+</html>
