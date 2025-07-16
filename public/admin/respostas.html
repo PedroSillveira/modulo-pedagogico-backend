@@ -391,45 +391,55 @@
             window.location.href = 'login.html';
         }
 
-        // Função para fazer requisições autenticadas
-        // async function apiRequest(endpoint, data = {}) {
-        //     try {
-        //         const payload = {
-        //             payload: {
-        //                 ...data,
-        //                 usuario_id: user.id
-        //             }
-        //         };
+        async function apiRequest(endpoint, data = {}) {
+            try {
+                const token = localStorage.getItem('pedagogico_token');
+                if (!token) {
+                    logout();
+                    return;
+                }
 
-        //         const response = await fetch(`${API_BASE}${endpoint}`, {
-        //             method: 'POST',
-        //             headers: {
-        //                 'Content-Type': 'application/json',
-        //             },
-        //             body: JSON.stringify(payload)
-        //         });
+                // MESMA ESTRUTURA DA PÁGINA DE CRIAR FORMULÁRIO
+                const payload = {
+                    payload: token,
+                    ...data  // Incluir dados (formulario_id, etc.) no nível raiz
+                };
 
-        //         const result = await response.json();
+                console.log('=== DEBUG FRONTEND ===');
+                console.log('Endpoint:', endpoint);
+                console.log('Dados enviados:', data);
+                console.log('Payload final:', payload);
+                console.log('=====================');
 
-        //         if (result.payload) {
-        //             const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8',
+                    },
+                    body: JSON.stringify(payload)
+                });
 
-        //             if (!decodedResponse.boleano) {
-        //                 if (decodedResponse.mensagem.includes('Token inválido')) {
-        //                     logout();
-        //                 }
-        //                 throw new Error(decodedResponse.mensagem);
-        //             }
+                const result = await response.json();
 
-        //             return decodedResponse.obj;
-        //         }
+                if (result.payload) {
+                    const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
 
-        //         throw new Error('Resposta inválida do servidor');
-        //     } catch (error) {
-        //         console.error('Erro na API:', error);
-        //         throw error;
-        //     }
-        // }
+                    if (!decodedResponse.boleano) {
+                        if (decodedResponse.mensagem.includes('Token inválido')) {
+                            logout();
+                        }
+                        throw new Error(decodedResponse.mensagem);
+                    }
+
+                    return decodedResponse.obj;
+                }
+
+                throw new Error('Resposta inválida do servidor');
+            } catch (error) {
+                console.error('Erro na API:', error);
+                throw error;
+            }
+        }
 
         async function apiRequest(endpoint, data = {}) {
             try {

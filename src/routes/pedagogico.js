@@ -7,6 +7,12 @@ const rota = express.Router();
 const security = require("../security/cypher");
 const execute = require("../services/execute_pedagogico");
 
+// tirar isso aqui
+rota.use((req, res, next) => {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    next();
+});
+
 function jsonMount(boll, data, msg) {
   return {
     payload: security.jwtencript({ boleano: boll, obj: data, mensagem: msg }),
@@ -18,6 +24,7 @@ function errorHandle(error, route) {
   console.log(error);
   return jsonMount(false, {}, "Tente novamente mais tarde!");
 }
+
 
 // function validarAutenticacao(payload) {
 //   // Remover debug após teste

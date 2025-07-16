@@ -388,14 +388,19 @@
             window.location.href = 'login.html';
         }
 
-        // Função para fazer requisições autenticadas
+
         // async function apiRequest(endpoint, data = {}) {
         //     try {
+        //         // Verificar se existe token armazenado
+        //         const token = localStorage.getItem('pedagogico_token');
+        //         if (!token) {
+        //             logout();
+        //             return;
+        //         }
+
+        //         // CORREÇÃO: Enviar o token diretamente como payload
         //         const payload = {
-        //             payload: {
-        //                 ...data,
-        //                 usuario_id: user.id
-        //             }
+        //             payload: token  // Enviar o token JWT diretamente
         //         };
 
         //         const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -430,22 +435,28 @@
 
         async function apiRequest(endpoint, data = {}) {
             try {
-                // Verificar se existe token armazenado
                 const token = localStorage.getItem('pedagogico_token');
                 if (!token) {
                     logout();
                     return;
                 }
 
-                // CORREÇÃO: Enviar o token diretamente como payload
+                // MESMA ESTRUTURA DA PÁGINA DE CRIAR FORMULÁRIO
                 const payload = {
-                    payload: token  // Enviar o token JWT diretamente
+                    payload: token,
+                    ...data  // Incluir dados (formulario_id, etc.) no nível raiz
                 };
+
+                console.log('=== DEBUG FRONTEND ===');
+                console.log('Endpoint:', endpoint);
+                console.log('Dados enviados:', data);
+                console.log('Payload final:', payload);
+                console.log('=====================');
 
                 const response = await fetch(`${API_BASE}${endpoint}`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json; charset=utf-8',
                     },
                     body: JSON.stringify(payload)
                 });
