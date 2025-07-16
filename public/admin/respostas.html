@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -68,7 +69,7 @@
             background: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
 
@@ -122,7 +123,7 @@
         .respostas-table {
             background: white;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
@@ -131,7 +132,8 @@
             border-collapse: collapse;
         }
 
-        th, td {
+        th,
+        td {
             padding: 15px;
             text-align: left;
             border-bottom: 1px solid #dee2e6;
@@ -180,7 +182,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0, 0, 0, 0.5);
         }
 
         .modal-content {
@@ -247,7 +249,7 @@
             background: white;
             padding: 15px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
 
@@ -266,12 +268,13 @@
             .container {
                 padding: 10px;
             }
-            
+
             table {
                 font-size: 14px;
             }
-            
-            th, td {
+
+            th,
+            td {
                 padding: 10px 8px;
             }
 
@@ -282,6 +285,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <h1>Sistema Pedagógico</h1>
@@ -364,11 +368,11 @@
     <script>
         // Configurações
         const API_BASE = 'http://localhost:4444';
-        
+
         // Verificar autenticação
         const token = localStorage.getItem('pedagogico_token');
         const user = JSON.parse(localStorage.getItem('pedagogico_user') || '{}');
-        
+
         if (!token) {
             window.location.href = 'login.html';
         }
@@ -388,13 +392,57 @@
         }
 
         // Função para fazer requisições autenticadas
+        // async function apiRequest(endpoint, data = {}) {
+        //     try {
+        //         const payload = {
+        //             payload: {
+        //                 ...data,
+        //                 usuario_id: user.id
+        //             }
+        //         };
+
+        //         const response = await fetch(`${API_BASE}${endpoint}`, {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //             },
+        //             body: JSON.stringify(payload)
+        //         });
+
+        //         const result = await response.json();
+
+        //         if (result.payload) {
+        //             const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
+
+        //             if (!decodedResponse.boleano) {
+        //                 if (decodedResponse.mensagem.includes('Token inválido')) {
+        //                     logout();
+        //                 }
+        //                 throw new Error(decodedResponse.mensagem);
+        //             }
+
+        //             return decodedResponse.obj;
+        //         }
+
+        //         throw new Error('Resposta inválida do servidor');
+        //     } catch (error) {
+        //         console.error('Erro na API:', error);
+        //         throw error;
+        //     }
+        // }
+
         async function apiRequest(endpoint, data = {}) {
             try {
+                // Verificar se existe token armazenado
+                const token = localStorage.getItem('pedagogico_token');
+                if (!token) {
+                    logout();
+                    return;
+                }
+
+                // CORREÇÃO: Enviar o token diretamente como payload
                 const payload = {
-                    payload: {
-                        ...data,
-                        usuario_id: user.id
-                    }
+                    payload: token  // Enviar o token JWT diretamente
                 };
 
                 const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -406,20 +454,20 @@
                 });
 
                 const result = await response.json();
-                
+
                 if (result.payload) {
                     const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
-                    
+
                     if (!decodedResponse.boleano) {
                         if (decodedResponse.mensagem.includes('Token inválido')) {
                             logout();
                         }
                         throw new Error(decodedResponse.mensagem);
                     }
-                    
+
                     return decodedResponse.obj;
                 }
-                
+
                 throw new Error('Resposta inválida do servidor');
             } catch (error) {
                 console.error('Erro na API:', error);
@@ -430,7 +478,7 @@
         // Função para formatar data
         function formatarData(dataString) {
             const data = new Date(dataString);
-            return data.toLocaleDateString('pt-BR') + ' às ' + data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+            return data.toLocaleDateString('pt-BR') + ' às ' + data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
         }
 
         // Carregar informações do formulário (se específico)
@@ -454,10 +502,10 @@
         // Carregar respostas
         async function carregarRespostas() {
             const tbody = document.getElementById('respostasTableBody');
-            
+
             try {
                 let respostas;
-                
+
                 if (formularioId) {
                     // Carregar respostas de um formulário específico
                     respostas = await apiRequest('/pedagogico/respostas_formulario', {
@@ -467,7 +515,7 @@
                     // Carregar todas as respostas (implementar endpoint se necessário)
                     throw new Error('Visualização geral de respostas não implementada ainda');
                 }
-                
+
                 if (respostas && respostas.length > 0) {
                     // Calcular estatísticas
                     const pontuacoes = respostas.map(r => r.pontos_ganhos);
@@ -504,7 +552,7 @@
                             </td>
                         </tr>
                     `;
-                    
+
                     // Zerar estatísticas
                     document.getElementById('totalRespostas').textContent = '0';
                     document.getElementById('pontuacaoMedia').textContent = '0';
@@ -529,7 +577,7 @@
             try {
                 const modal = document.getElementById('detalhesModal');
                 const content = document.getElementById('detalhesContent');
-                
+
                 // Mostrar modal com loading
                 content.innerHTML = '<div class="loading">Carregando detalhes...</div>';
                 modal.style.display = 'block';
@@ -557,7 +605,7 @@
 
             } catch (error) {
                 console.error('Erro ao carregar detalhes:', error);
-                document.getElementById('detalhesContent').innerHTML = 
+                document.getElementById('detalhesContent').innerHTML =
                     `<div class="error">Erro ao carregar detalhes: ${error.message}</div>`;
             }
         }
@@ -568,7 +616,7 @@
         }
 
         // Fechar modal clicando fora
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             const modal = document.getElementById('detalhesModal');
             if (event.target === modal) {
                 modal.style.display = 'none';
@@ -596,4 +644,5 @@
         carregarRespostas();
     </script>
 </body>
+
 </html>

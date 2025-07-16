@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -68,7 +69,7 @@
             background: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
@@ -109,7 +110,7 @@
             background: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
 
@@ -128,7 +129,7 @@
         .ranking-table {
             background: white;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
@@ -137,7 +138,8 @@
             border-collapse: collapse;
         }
 
-        th, td {
+        th,
+        td {
             padding: 15px;
             text-align: left;
             border-bottom: 1px solid #dee2e6;
@@ -261,24 +263,25 @@
             .container {
                 padding: 10px;
             }
-            
+
             .page-header {
                 flex-direction: column;
                 gap: 15px;
             }
-            
+
             .search-box input {
                 width: 100%;
             }
-            
+
             table {
                 font-size: 14px;
             }
-            
-            th, td {
+
+            th,
+            td {
                 padding: 10px 8px;
             }
-            
+
             .participante-info {
                 flex-direction: column;
                 text-align: center;
@@ -286,6 +289,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <h1>Sistema Pedagógico</h1>
@@ -305,14 +309,17 @@
         <div class="page-header">
             <h2>🏆 Ranking dos Imperadores</h2>
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Buscar por nome ou email..." onkeyup="filtrarRanking()">
+                <input type="text" id="searchInput" placeholder="Buscar por nome ou email..."
+                    onkeyup="filtrarRanking()">
             </div>
         </div>
 
         <!-- Informação de filtro -->
         <div id="filterInfo" class="filter-info">
             <strong>Filtro ativo:</strong> <span id="filterText"></span>
-            <button onclick="limparFiltro()" style="margin-left: 10px; background: none; border: none; color: #0066cc; cursor: pointer;">✖ Limpar</button>
+            <button onclick="limparFiltro()"
+                style="margin-left: 10px; background: none; border: none; color: #0066cc; cursor: pointer;">✖
+                Limpar</button>
         </div>
 
         <!-- Estatísticas -->
@@ -358,11 +365,11 @@
     <script>
         // Configurações
         const API_BASE = 'http://localhost:4444';
-        
+
         // Verificar autenticação
         const token = localStorage.getItem('pedagogico_token');
         const user = JSON.parse(localStorage.getItem('pedagogico_user') || '{}');
-        
+
         if (!token) {
             window.location.href = 'login.html';
         }
@@ -382,13 +389,57 @@
         }
 
         // Função para fazer requisições autenticadas
+        // async function apiRequest(endpoint, data = {}) {
+        //     try {
+        //         const payload = {
+        //             payload: {
+        //                 ...data,
+        //                 usuario_id: user.id
+        //             }
+        //         };
+
+        //         const response = await fetch(`${API_BASE}${endpoint}`, {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //             },
+        //             body: JSON.stringify(payload)
+        //         });
+
+        //         const result = await response.json();
+
+        //         if (result.payload) {
+        //             const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
+
+        //             if (!decodedResponse.boleano) {
+        //                 if (decodedResponse.mensagem.includes('Token inválido')) {
+        //                     logout();
+        //                 }
+        //                 throw new Error(decodedResponse.mensagem);
+        //             }
+
+        //             return decodedResponse.obj;
+        //         }
+
+        //         throw new Error('Resposta inválida do servidor');
+        //     } catch (error) {
+        //         console.error('Erro na API:', error);
+        //         throw error;
+        //     }
+        // }
+
         async function apiRequest(endpoint, data = {}) {
             try {
+                // Verificar se existe token armazenado
+                const token = localStorage.getItem('pedagogico_token');
+                if (!token) {
+                    logout();
+                    return;
+                }
+
+                // CORREÇÃO: Enviar o token diretamente como payload
                 const payload = {
-                    payload: {
-                        ...data,
-                        usuario_id: user.id
-                    }
+                    payload: token  // Enviar o token JWT diretamente
                 };
 
                 const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -400,20 +451,20 @@
                 });
 
                 const result = await response.json();
-                
+
                 if (result.payload) {
                     const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
-                    
+
                     if (!decodedResponse.boleano) {
                         if (decodedResponse.mensagem.includes('Token inválido')) {
                             logout();
                         }
                         throw new Error(decodedResponse.mensagem);
                     }
-                    
+
                     return decodedResponse.obj;
                 }
-                
+
                 throw new Error('Resposta inválida do servidor');
             } catch (error) {
                 console.error('Erro na API:', error);
@@ -424,15 +475,15 @@
         // Função para obter iniciais do nome
         function obterIniciais(nome) {
             return nome.split(' ')
-                      .map(n => n[0])
-                      .join('')
-                      .substring(0, 2)
-                      .toUpperCase();
+                .map(n => n[0])
+                .join('')
+                .substring(0, 2)
+                .toUpperCase();
         }
 
         // Função para obter medalha
         function obterMedalha(posicao) {
-            switch(posicao) {
+            switch (posicao) {
                 case 1: return '<span class="medal">🥇</span>';
                 case 2: return '<span class="medal">🥈</span>';
                 case 3: return '<span class="medal">🥉</span>';
@@ -455,14 +506,14 @@
         // Carregar ranking
         async function carregarRanking() {
             const tbody = document.getElementById('rankingTableBody');
-            
+
             try {
                 const ranking = await apiRequest('/pedagogico/ranking_global');
-                
+
                 if (ranking && ranking.length > 0) {
                     rankingCompleto = ranking;
                     rankingFiltrado = [...ranking];
-                    
+
                     // Calcular estatísticas
                     const pontuacoes = ranking.map(r => r.pontuacao_total);
                     const totalFormularios = ranking.reduce((sum, r) => sum + r.total_formularios, 0);
@@ -487,7 +538,7 @@
                             </td>
                         </tr>
                     `;
-                    
+
                     // Zerar estatísticas
                     document.getElementById('totalImperadores').textContent = '0';
                     document.getElementById('pontuacaoMedia').textContent = '0';
@@ -510,7 +561,7 @@
         // Mostrar ranking na tabela
         function mostrarRanking(dados) {
             const tbody = document.getElementById('rankingTableBody');
-            
+
             if (dados.length === 0) {
                 tbody.innerHTML = `
                     <tr>
@@ -555,20 +606,20 @@
             const termo = document.getElementById('searchInput').value.toLowerCase().trim();
             const filterInfo = document.getElementById('filterInfo');
             const filterText = document.getElementById('filterText');
-            
+
             if (termo === '') {
                 rankingFiltrado = [...rankingCompleto];
                 filterInfo.classList.remove('active');
             } else {
-                rankingFiltrado = rankingCompleto.filter(participante => 
+                rankingFiltrado = rankingCompleto.filter(participante =>
                     participante.nome.toLowerCase().includes(termo) ||
                     participante.email.toLowerCase().includes(termo)
                 );
-                
+
                 filterInfo.classList.add('active');
                 filterText.textContent = `"${termo}" (${rankingFiltrado.length} resultado${rankingFiltrado.length !== 1 ? 's' : ''})`;
             }
-            
+
             mostrarRanking(rankingFiltrado);
         }
 
@@ -581,7 +632,7 @@
         }
 
         // Event listener para Enter na busca
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 filtrarRanking();
             }
@@ -591,4 +642,5 @@
         carregarRanking();
     </script>
 </body>
+
 </html>

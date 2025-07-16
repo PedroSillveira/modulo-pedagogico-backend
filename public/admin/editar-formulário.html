@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -67,7 +68,7 @@
             background: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
 
@@ -89,7 +90,9 @@
             font-weight: bold;
         }
 
-        input, textarea, select {
+        input,
+        textarea,
+        select {
             width: 100%;
             padding: 10px;
             border: 2px solid #ddd;
@@ -97,7 +100,9 @@
             font-size: 14px;
         }
 
-        input:focus, textarea:focus, select:focus {
+        input:focus,
+        textarea:focus,
+        select:focus {
             outline: none;
             border-color: #667eea;
         }
@@ -229,13 +234,14 @@
             .container {
                 padding: 10px;
             }
-            
+
             .form-row {
                 grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <h1>Sistema Pedagógico</h1>
@@ -257,7 +263,7 @@
             <!-- Dados do Formulário -->
             <div class="form-section">
                 <h3>📋 Editar Dados do Formulário</h3>
-                
+
                 <div class="form-group">
                     <label for="titulo">Título do Formulário *</label>
                     <input type="text" id="titulo" required>
@@ -279,7 +285,7 @@
             <!-- Adicionar Nova Pergunta -->
             <div class="form-section">
                 <h3>❓ Adicionar Nova Pergunta</h3>
-                
+
                 <div class="form-group">
                     <label for="perguntaTitulo">Título da Pergunta *</label>
                     <input type="text" id="perguntaTitulo" placeholder="Ex: Como você avalia nosso evento?">
@@ -326,9 +332,10 @@
 
             <!-- Ações -->
             <div class="form-section">
-                <button class="btn btn-success" onclick="salvarTodasAlteracoes()" id="btnSalvarTudo">💾 Salvar Todas as Alterações</button>
+                <button class="btn btn-success" onclick="salvarTodasAlteracoes()" id="btnSalvarTudo">💾 Salvar Todas as
+                    Alterações</button>
                 <a href="formularios.html" class="btn btn-secondary">Voltar</a>
-                
+
                 <div id="message" style="margin-top: 15px;"></div>
             </div>
         </div>
@@ -337,11 +344,11 @@
     <script>
         // Configurações
         const API_BASE = 'http://localhost:4444';
-        
+
         // Verificar autenticação
         const token = localStorage.getItem('pedagogico_token');
         const user = JSON.parse(localStorage.getItem('pedagogico_user') || '{}');
-        
+
         if (!token) {
             window.location.href = 'login.html';
         }
@@ -371,13 +378,57 @@
         }
 
         // Função para fazer requisições autenticadas
+        // async function apiRequest(endpoint, data = {}) {
+        //     try {
+        //         const payload = {
+        //             payload: {
+        //                 ...data,
+        //                 usuario_id: user.id
+        //             }
+        //         };
+
+        //         const response = await fetch(`${API_BASE}${endpoint}`, {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //             },
+        //             body: JSON.stringify(payload)
+        //         });
+
+        //         const result = await response.json();
+
+        //         if (result.payload) {
+        //             const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
+
+        //             if (!decodedResponse.boleano) {
+        //                 if (decodedResponse.mensagem.includes('Token inválido')) {
+        //                     logout();
+        //                 }
+        //                 throw new Error(decodedResponse.mensagem);
+        //             }
+
+        //             return decodedResponse.obj;
+        //         }
+
+        //         throw new Error('Resposta inválida do servidor');
+        //     } catch (error) {
+        //         console.error('Erro na API:', error);
+        //         throw error;
+        //     }
+        // }
+
         async function apiRequest(endpoint, data = {}) {
             try {
+                // Verificar se existe token armazenado
+                const token = localStorage.getItem('pedagogico_token');
+                if (!token) {
+                    logout();
+                    return;
+                }
+
+                // CORREÇÃO: Enviar o token diretamente como payload
                 const payload = {
-                    payload: {
-                        ...data,
-                        usuario_id: user.id
-                    }
+                    payload: token  // Enviar o token JWT diretamente
                 };
 
                 const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -389,20 +440,20 @@
                 });
 
                 const result = await response.json();
-                
+
                 if (result.payload) {
                     const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
-                    
+
                     if (!decodedResponse.boleano) {
                         if (decodedResponse.mensagem.includes('Token inválido')) {
                             logout();
                         }
                         throw new Error(decodedResponse.mensagem);
                     }
-                    
+
                     return decodedResponse.obj;
                 }
-                
+
                 throw new Error('Resposta inválida do servidor');
             } catch (error) {
                 console.error('Erro na API:', error);
@@ -414,7 +465,7 @@
         function mostrarOpcoes() {
             const tipo = document.getElementById('perguntaTipo').value;
             const opcoesGroup = document.getElementById('opcoesGroup');
-            
+
             if (tipo === 'multipla_escolha') {
                 opcoesGroup.classList.remove('hidden');
             } else {
@@ -456,7 +507,7 @@
                 // Preencher dados do formulário
                 document.getElementById('titulo').value = data.formulario.titulo || '';
                 document.getElementById('descricao').value = data.formulario.descricao || '';
-                
+
                 // Formatar data para datetime-local
                 if (data.formulario.data_limite) {
                     const dataLimite = new Date(data.formulario.data_limite);
@@ -466,11 +517,11 @@
 
                 // Armazenar perguntas existentes
                 perguntasExistentes = data.perguntas || [];
-                
+
                 // Mostrar conteúdo
                 document.getElementById('loadingFormulario').style.display = 'none';
                 document.getElementById('formularioContent').classList.remove('hidden');
-                
+
                 // Carregar perguntas
                 carregarPerguntasExistentes();
 
@@ -486,7 +537,7 @@
         function carregarPerguntasExistentes() {
             const container = document.getElementById('perguntasExistentes');
             const total = document.getElementById('totalPerguntas');
-            
+
             total.textContent = perguntasExistentes.length;
 
             if (perguntasExistentes.length === 0) {
@@ -525,9 +576,9 @@
             if (!pergunta) return;
 
             const container = document.getElementById(`pergunta-${perguntaId}`);
-            
+
             const opcoesList = pergunta.opcoes ? JSON.parse(pergunta.opcoes).join('\n') : '';
-            
+
             container.innerHTML = `
                 <div class="pergunta-header">
                     <strong>Editando Pergunta ${pergunta.ordem}</strong>
@@ -565,7 +616,7 @@
                     </div>
                 </div>
             `;
-            
+
             container.classList.add('edit-mode');
         }
 
@@ -573,7 +624,7 @@
         function mostrarOpcoesEdicao(perguntaId) {
             const tipo = document.getElementById(`edit-tipo-${perguntaId}`).value;
             const opcoesGroup = document.getElementById(`edit-opcoes-group-${perguntaId}`);
-            
+
             if (tipo === 'multipla_escolha') {
                 opcoesGroup.classList.remove('hidden');
             } else {
@@ -667,7 +718,7 @@
 
             try {
                 const novaOrdem = Math.max(...perguntasExistentes.map(p => p.ordem), 0) + 1;
-                
+
                 const resultado = await apiRequest('/pedagogico/criar_pergunta', {
                     formulario_id: formularioId,
                     titulo: titulo,
@@ -737,4 +788,5 @@
         carregarFormulario();
     </script>
 </body>
+
 </html>

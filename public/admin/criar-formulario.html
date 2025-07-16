@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -67,7 +68,7 @@
             background: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
 
@@ -89,7 +90,9 @@
             font-weight: bold;
         }
 
-        input, textarea, select {
+        input,
+        textarea,
+        select {
             width: 100%;
             padding: 10px;
             border: 2px solid #ddd;
@@ -97,7 +100,9 @@
             font-size: 14px;
         }
 
-        input:focus, textarea:focus, select:focus {
+        input:focus,
+        textarea:focus,
+        select:focus {
             outline: none;
             border-color: #667eea;
         }
@@ -211,13 +216,14 @@
             .container {
                 padding: 10px;
             }
-            
+
             .form-row {
                 grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <h1>Sistema Pedagógico</h1>
@@ -235,7 +241,7 @@
         <!-- Dados do Formulário -->
         <div class="form-section">
             <h3>📋 Dados do Formulário</h3>
-            
+
             <div class="form-group">
                 <label for="titulo">Título do Formulário *</label>
                 <input type="text" id="titulo" placeholder="Ex: Pesquisa de Satisfação - Evento Q1 2025" required>
@@ -255,7 +261,7 @@
         <!-- Adicionar Pergunta -->
         <div class="form-section">
             <h3>❓ Adicionar Pergunta</h3>
-            
+
             <div class="form-group">
                 <label for="perguntaTitulo">Título da Pergunta *</label>
                 <input type="text" id="perguntaTitulo" placeholder="Ex: Como você avalia nosso evento?">
@@ -304,7 +310,7 @@
         <div class="form-section">
             <button class="btn btn-success" onclick="salvarFormulario()" id="btnSalvar">💾 Salvar Formulário</button>
             <a href="formularios.html" class="btn btn-secondary">Cancelar</a>
-            
+
             <div id="message" style="margin-top: 15px;"></div>
         </div>
     </div>
@@ -312,11 +318,11 @@
     <script>
         // Configurações
         const API_BASE = 'http://localhost:4444';
-        
+
         // Verificar autenticação
         const token = localStorage.getItem('pedagogico_token');
         const user = JSON.parse(localStorage.getItem('pedagogico_user') || '{}');
-        
+
         if (!token) {
             window.location.href = 'login.html';
         }
@@ -343,7 +349,7 @@
         function mostrarOpcoes() {
             const tipo = document.getElementById('perguntaTipo').value;
             const opcoesGroup = document.getElementById('opcoesGroup');
-            
+
             if (tipo === 'multipla_escolha') {
                 opcoesGroup.classList.remove('hidden');
             } else {
@@ -407,7 +413,7 @@
         // Função para mover pergunta
         function moverPergunta(index, direcao) {
             const novoIndex = index + direcao;
-            
+
             if (novoIndex >= 0 && novoIndex < perguntas.length) {
                 [perguntas[index], perguntas[novoIndex]] = [perguntas[novoIndex], perguntas[index]];
                 // Reordenar
@@ -420,7 +426,7 @@
         function atualizarListaPerguntas() {
             const lista = document.getElementById('perguntasList');
             const total = document.getElementById('totalPerguntas');
-            
+
             total.textContent = perguntas.length;
 
             if (perguntas.length === 0) {
@@ -477,39 +483,90 @@
             }, 5000);
         }
 
-        // Função para fazer requisições autenticadas
+
+        // async function apiRequest(endpoint, data = {}) {
+        //     try {
+        //         // Verificar se existe token armazenado
+        //         const token = localStorage.getItem('pedagogico_token');
+        //         if (!token) {
+        //             logout();
+        //             return;
+        //         }
+
+        //         // CORREÇÃO: Enviar o token diretamente como payload
+        //         const payload = {
+        //             payload: token  // Enviar o token JWT diretamente
+        //         };
+
+        //         const response = await fetch(`${API_BASE}${endpoint}`, {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //             },
+        //             body: JSON.stringify(payload)
+        //         });
+
+        //         const result = await response.json();
+
+        //         if (result.payload) {
+        //             const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
+
+        //             if (!decodedResponse.boleano) {
+        //                 if (decodedResponse.mensagem.includes('Token inválido')) {
+        //                     logout();
+        //                 }
+        //                 throw new Error(decodedResponse.mensagem);
+        //             }
+
+        //             return decodedResponse.obj;
+        //         }
+
+        //         throw new Error('Resposta inválida do servidor');
+        //     } catch (error) {
+        //         console.error('Erro na API:', error);
+        //         throw error;
+        //     }
+        // }
+
         async function apiRequest(endpoint, data = {}) {
             try {
+                const token = localStorage.getItem('pedagogico_token');
+                const user = JSON.parse(localStorage.getItem('pedagogico_user') || '{}');
+
+                if (!token) {
+                    logout();
+                    return;
+                }
+
+                // FORMATO ESPERADO PELO BACKEND: payload com token + dados
                 const payload = {
-                    payload: {
-                        ...data,
-                        usuario_id: user.id
-                    }
+                    payload: token,
+                    ...data  // Adicionar dados diretamente no nível raiz
                 };
 
                 const response = await fetch(`${API_BASE}${endpoint}`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json; charset=utf-8',
                     },
                     body: JSON.stringify(payload)
                 });
 
                 const result = await response.json();
-                
+
                 if (result.payload) {
                     const decodedResponse = JSON.parse(atob(result.payload.split('.')[1]));
-                    
+
                     if (!decodedResponse.boleano) {
                         if (decodedResponse.mensagem.includes('Token inválido')) {
                             logout();
                         }
                         throw new Error(decodedResponse.mensagem);
                     }
-                    
+
                     return decodedResponse.obj;
                 }
-                
+
                 throw new Error('Resposta inválida do servidor');
             } catch (error) {
                 console.error('Erro na API:', error);
@@ -560,7 +617,7 @@
                 }
 
                 showMessage('Formulário criado com sucesso!', 'success');
-                
+
                 setTimeout(() => {
                     window.location.href = 'formularios.html';
                 }, 2000);
@@ -574,4 +631,5 @@
         }
     </script>
 </body>
+
 </html>

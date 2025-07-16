@@ -4,8 +4,11 @@ const cors = require("cors");
 
 app.use(cors());
 
-app.use(express.json({ limit: "20mb" }));
-app.use(express.urlencoded({ limit: "20mb", extended: true }));
+// app.use(express.json({ limit: "20mb" }));
+// app.use(express.urlencoded({ limit: "20mb", extended: true }));
+
+app.use(express.json({ limit: "20mb", charset: 'utf-8' }));
+app.use(express.urlencoded({ limit: "20mb", extended: true, charset: 'utf-8' }));
 
 app.set("trust proxy", 1);
 
