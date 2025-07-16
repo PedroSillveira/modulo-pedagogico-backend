@@ -1,11 +1,25 @@
 {
-  "name": "template",
+  "name": "modulo-pedagogico-backend",
   "version": "1.0.0",
-  "description": "este arquivoé um template a ser seguido",
+  "description": "modulo do pedagogico para formularios e ranking de imperadores",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/app.js",
+    "start": "node src/app.js"
   },
-  "author": "Marcelo Ramos de Melo",
-  "license": "ISC"
+  "author": "Pedro Silveira",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "exceljs": "^4.4.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.1",
+    "nodemailer": "^7.0.5",
+    "nodemon": "^3.1.10",
+    "pg": "^8.16.3",
+    "speakeasy": "^2.0.0"
+  }
 }
